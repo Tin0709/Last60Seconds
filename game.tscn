@@ -64,7 +64,7 @@ position_smoothing_enabled = false
 volume_db = -9.0
 
 [node name="FootstepSound" type="AudioStreamPlayer" parent="Player"]
-volume_db = -24.0
+volume_db = -17.0
 
 [node name="Enemy" type="CharacterBody2D" parent="." unique_id=501922679 groups=["enemies"]]
 position = Vector2(200, 300)
