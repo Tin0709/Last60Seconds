@@ -10,6 +10,13 @@ var solid_positions: Array[Vector2] = []
 var clearing: Rect2
 var paths: Array[PackedVector2Array] = []
 var path_widths: Array[float] = [24.0, 16.0, 12.0]
+var canopy_rects: Array[Rect2] = []
+var bush_rects: Array[Rect2] = []
+var detail_positions: Array[Vector2] = []
+var visible_regions: Dictionary = {}
+var foreground_sprites: Array[Sprite2D] = []
+
+@onready var player: Node2D = get_parent().get_node("Player")
 
 func _ready() -> void:
 	var bounds: Rect2 = get_parent().world_bounds
@@ -77,7 +84,7 @@ func _ready() -> void:
 					if not is_on_path(nearby):
 						add_prop($Decorations, VEGETATION, region, nearby)
 
-	# A jittered carpet fills the gaps between patches without moving existing props.
+	# A jittered carpet fills the gaps between the loose patches.
 	rng.seed = 601
 	var vegetation_bounds = bounds.grow(-48.0)
 	for x in range(ceili(vegetation_bounds.size.x / 64.0)):
@@ -99,6 +106,46 @@ func _ready() -> void:
 			if not central and rng.randf() < 0.08:
 				var region = Rect2(rng.randi_range(0, 1) * 48, rng.randi_range(0, 2) * 32, 48, 32)
 				add_prop($Decorations, VEGETATION, region, point, 0.0, rng.randf() < 0.5)
+
+func _process(delta: float) -> void:
+	# Match the player's visible head/body, rather than the collision circle at its feet.
+	var player_rect = Rect2(player.global_position + Vector2(-14, -42), Vector2(28, 44))
+	for sprite in foreground_sprites:
+		var prop = sprite.get_parent() as Node2D
+		var cover = prop.get_global_transform() * prop.get_meta("visible_rect")
+		var obscured = player.global_position.y < prop.global_position.y and cover.intersects(player_rect)
+		sprite.modulate.a = move_toward(sprite.modulate.a, 0.68 if obscured else 1.0, delta * 2.5)
+
+func visible_prop_rect(texture: Texture2D, region: Rect2) -> Rect2:
+	var key = texture.resource_path + str(region)
+	if not visible_regions.has(key):
+		var pixels = texture.get_image().get_region(Rect2i(region)).get_used_rect()
+		visible_regions[key] = Rect2(Vector2(pixels.position) * 2.0 - Vector2(region.size.x, region.size.y * 2.0), Vector2(pixels.size) * 2.0)
+	return visible_regions[key]
+
+func place_bush(point: Vector2, local_rect: Rect2) -> Vector2:
+	var bounds: Rect2 = get_parent().world_bounds
+	# Search near the original patch without changing the seeded solid placement.
+	for attempt in range(33):
+		var candidate = point
+		if attempt > 0:
+			var ring = ceili(attempt / 8.0)
+			candidate += Vector2.from_angle((attempt - 1) * TAU / 8.0) * ring * 48.0
+		var footprint = Rect2(candidate + local_rect.position, local_rect.size)
+		if not bounds.grow(-24.0).encloses(footprint) or clearing.intersects(footprint):
+			continue
+		if is_on_path(candidate) or is_on_path(candidate + Vector2(local_rect.position.x, -16)) or is_on_path(candidate + Vector2(local_rect.end.x, -16)):
+			continue
+		var crowded = false
+		for occupied in canopy_rects:
+			if footprint.grow(10.0).intersects(occupied):
+				crowded = true
+				break
+		if not crowded:
+			canopy_rects.append(footprint)
+			bush_rects.append(footprint)
+			return candidate
+	return Vector2.INF
 
 func build_ground(bounds: Rect2) -> void:
 	var atlas = TileSetAtlasSource.new()
@@ -191,6 +238,28 @@ func can_place_solid(point: Vector2, bounds: Rect2) -> bool:
 	return true
 
 func add_prop(layer: Node2D, texture: Texture2D, region: Rect2, point: Vector2, radius: float = 0.0, mirrored: bool = false) -> void:
+	var local_rect = visible_prop_rect(texture, region)
+	if mirrored:
+		local_rect.position.x = -local_rect.end.x
+	var large_bush = texture == VEGETATION and region.size.x >= 32
+	if radius > 0.0:
+		canopy_rects.append(Rect2(point + local_rect.position, local_rect.size))
+	elif large_bush:
+		point = place_bush(point, local_rect)
+		if point == Vector2.INF:
+			return
+	else:
+		# Retain plenty of low cover, but avoid piles of identical tiny plants.
+		for existing in detail_positions:
+			if point.distance_squared_to(existing) < 18.0 * 18.0:
+				return
+		for bush in bush_rects:
+			if bush.has_point(point):
+				return
+		detail_positions.append(point)
+	# Upright plants share the characters' foot-based depth; low details stay on the ground.
+	if large_bush or region.size.y >= 32:
+		layer = $Obstacles
 	var prop: Node2D = StaticBody2D.new() if radius > 0.0 else Node2D.new()
 	prop.position = point
 	var sprite = Sprite2D.new()
@@ -201,6 +270,9 @@ func add_prop(layer: Node2D, texture: Texture2D, region: Rect2, point: Vector2, 
 	sprite.scale = Vector2(2, 2)
 	sprite.position.y = -region.size.y
 	prop.add_child(sprite)
+	if large_bush or (radius > 0.0 and region.size.y >= 48):
+		prop.set_meta("visible_rect", local_rect)
+		foreground_sprites.append(sprite)
 	if radius > 0.0:
 		var collision = CollisionShape2D.new()
 		var shape = CircleShape2D.new()
