@@ -14,6 +14,19 @@ radius = 18.0
 [node name="Game" type="Node2D" unique_id=1318419053]
 script = ExtResource("4_countdown")
 
+[node name="World" type="Node2D" parent="."]
+texture_filter = 1
+
+[node name="Ground" type="TileMapLayer" parent="World"]
+z_index = -2
+collision_enabled = false
+
+[node name="Decorations" type="TileMapLayer" parent="World"]
+z_index = -1
+collision_enabled = false
+
+[node name="Obstacles" type="TileMapLayer" parent="World"]
+
 [node name="Player" type="CharacterBody2D" parent="." unique_id=1518452810 groups=["player"]]
 position = Vector2(500, 300)
 script = ExtResource("1_80nbo")
