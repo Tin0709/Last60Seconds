@@ -76,6 +76,8 @@ func _ready() -> void:
 	blade.texture = TEXTURE
 	blade.region_enabled = true
 	blade.region_rect = REGION
+	blade.scale = Vector2(2, 2)
+	blade.offset = Vector2(0, -12)
 	add_child(blade)
 	slash = AnimatedSprite2D.new()
 	slash.sprite_frames = slices
@@ -91,7 +93,7 @@ func _ready() -> void:
 func face(direction: Vector2) -> void:
 	if attacking:
 		return
-	blade.position = Vector2(direction.x * 14, -8)
+	blade.position = Vector2(direction.x * 16, -8 + direction.y * 8)
 	blade.rotation = direction.angle() + PI / 2.0
 	blade.z_index = -1 if direction == Vector2.UP else 0
 

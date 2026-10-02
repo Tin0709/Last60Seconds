@@ -50,7 +50,7 @@ func _physics_process(delta):
 			facing_direction = Vector2.DOWN if direction.y > 0.0 else Vector2.UP
 	if equipped_weapon == &"sword":
 		$Sword.face(facing_direction)
-	elif equipped_weapon == &"gun":
+	elif equipped_weapon == &"gun" and direction != Vector2.ZERO:
 		$Gun.face(facing_direction)
 	if equipped_weapon != &"" and attack_cooldown == 0.0 and Input.is_action_just_pressed("attack"):
 		if equipped_weapon == &"sword":

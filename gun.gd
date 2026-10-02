@@ -24,12 +24,13 @@ func _ready() -> void:
 	sprite.texture = TEXTURE
 	sprite.region_enabled = true
 	sprite.region_rect = Rect2(TEXTURE.get_image().get_used_rect())
-	sprite.scale = Vector2(0.5, 0.5)
+	sprite.scale = Vector2.ONE
+	sprite.offset = Vector2(16, 0)
 	add_child(sprite)
 	muzzle = Polygon2D.new()
 	muzzle.polygon = PackedVector2Array([Vector2(0, 0), Vector2(6, -6), Vector2(5, -2), Vector2(14, 0), Vector2(5, 2), Vector2(6, 6)])
 	muzzle.color = Color("ffe6a0")
-	muzzle.position = Vector2(sprite.region_rect.size.x / 2.0 + 2, -2)
+	muzzle.position = Vector2(sprite.offset.x + sprite.region_rect.size.x / 2.0 + 2, 0)
 	muzzle.visible = false
 	sprite.add_child(muzzle)
 	shot_sound = AudioStreamPlayer.new()
@@ -43,22 +44,50 @@ func _ready() -> void:
 	face(Vector2.RIGHT)
 
 func face(direction: Vector2) -> void:
-	sprite.position = Vector2(direction.x * 10, -12)
+	if flash_time > 0.0:
+		return
+	sprite.position = Vector2(0, -12)
 	sprite.rotation = direction.angle()
-	sprite.flip_v = direction == Vector2.LEFT
-	sprite.z_index = -1 if direction == Vector2.UP else 0
+	sprite.flip_v = direction.x < 0.0
+	sprite.z_index = -1 if direction.y < -0.5 else 0
+
+func nearest_enemy() -> Node2D:
+	var nearest: Node2D = null
+	var nearest_distance = INF
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		if not is_instance_valid(enemy) or enemy.is_queued_for_deletion() or not enemy.is_inside_tree() or enemy.dead or enemy.health <= 0:
+			continue
+		var distance = global_position.distance_squared_to(enemy.global_position)
+		if distance < nearest_distance:
+			nearest = enemy
+			nearest_distance = distance
+	return nearest
 
 func fire(direction: Vector2) -> void:
 	if not visible or not get_parent().is_physics_processing():
 		return
+	# Select once per shot; the bullet keeps its direction instead of tracking/jittering.
+	var target = nearest_enemy()
+	var origin = global_position + Vector2(0, -12)
+	if target != null and not origin.is_equal_approx(target.global_position):
+		direction = origin.direction_to(target.global_position)
 	face(direction)
+	var start = muzzle.global_position
+	if target != null:
+		# A nearby enemy can be closer than the enlarged barrel: do not spawn past it.
+		var distance = origin.distance_to(target.global_position)
+		start = origin + direction * minf(muzzle.position.x, distance * 0.5)
+	# A larger barrel must not spawn bullets on the far side of a nearby solid.
+	var query = PhysicsRayQueryParameters2D.create(origin, start, 1, [get_parent().get_rid()])
+	if not get_world_2d().direct_space_state.intersect_ray(query).is_empty():
+		start = origin
 	var bullet = Bullet.new()
 	bullet.direction = direction
 	bullet.shooter = get_parent()
 	bullet.gun = self
 	bullet.bounds = get_parent().world_bounds
 	get_parent().get_parent().add_child(bullet)
-	bullet.global_position = sprite.global_position + direction * (sprite.region_rect.size.x * 0.25 + 4)
+	bullet.global_position = start
 	shot_sound.play()
 	muzzle.visible = true
 	flash_time = 0.05

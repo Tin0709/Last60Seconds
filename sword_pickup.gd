@@ -13,8 +13,8 @@ func _ready() -> void:
 	sprite.texture = Gun.TEXTURE if weapon == &"gun" else Sword.TEXTURE
 	sprite.region_enabled = true
 	sprite.region_rect = Rect2(Gun.TEXTURE.get_image().get_used_rect()) if weapon == &"gun" else Sword.REGION
-	sprite.scale = Vector2(0.5, 0.5) if weapon == &"gun" else Vector2.ONE
-	sprite.position.y = -12
+	sprite.scale = Vector2.ONE if weapon == &"gun" else Vector2(2, 2)
+	sprite.position.y = -14 if weapon == &"gun" else -18
 	sprite.rotation = -PI / 4.0
 	add_child(sprite)
 	var collision = CollisionShape2D.new()
