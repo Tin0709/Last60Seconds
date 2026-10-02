@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://8y4v5uq7gsww"
+path="res://.godot/imported/WEAPSwrd_SwordStabCombowRing_HoveAud_SwordCombat_11.wav-a9c353a031901b2eec55c881ef6519bc.sample"
+
+[deps]
+
+source_file="res://assets/Sword Combat Sound Effects Pack FREE VERSION/Main Sounds/Sword Stabs/Full Stab Combo w:Ring/WEAPSwrd_SwordStabCombowRing_HoveAud_SwordCombat_11.wav"
+dest_files=["res://.godot/imported/WEAPSwrd_SwordStabCombowRing_HoveAud_SwordCombat_11.wav-a9c353a031901b2eec55c881ef6519bc.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

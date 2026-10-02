@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://b522ua0hgkqrt"
+path="res://.godot/imported/WEAPSwrd_MetalwWhoosh_HoveAud_SwordCombat_03.wav-2a75ebed2ca518eea4f409e205ec4797.sample"
+
+[deps]
+
+source_file="res://assets/Sword Combat Sound Effects Pack FREE VERSION/Main Sounds/Sword Collisions/Metal Combo/WEAPSwrd_MetalwWhoosh_HoveAud_SwordCombat_03.wav"
+dest_files=["res://.godot/imported/WEAPSwrd_MetalwWhoosh_HoveAud_SwordCombat_03.wav-2a75ebed2ca518eea4f409e205ec4797.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

@@ -49,6 +49,9 @@ func _physics_process(delta):
 		move_and_collide(recoil_direction * 12.0)
 
 func take_sword_hit() -> bool:
+	return take_hit()
+
+func take_hit() -> bool:
 	if dead:
 		return false
 	health -= 1

@@ -1,6 +1,8 @@
 extends Area2D
 
 const Sword = preload("res://sword.gd")
+const Gun = preload("res://gun.gd")
+@export var weapon: StringName = &"sword"
 var collected: bool = false
 
 func _ready() -> void:
@@ -8,9 +10,10 @@ func _ready() -> void:
 	collision_mask = 1
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	var sprite = Sprite2D.new()
-	sprite.texture = Sword.TEXTURE
+	sprite.texture = Gun.TEXTURE if weapon == &"gun" else Sword.TEXTURE
 	sprite.region_enabled = true
-	sprite.region_rect = Sword.REGION
+	sprite.region_rect = Rect2(Gun.TEXTURE.get_image().get_used_rect()) if weapon == &"gun" else Sword.REGION
+	sprite.scale = Vector2(0.5, 0.5) if weapon == &"gun" else Vector2.ONE
 	sprite.position.y = -12
 	sprite.rotation = -PI / 4.0
 	add_child(sprite)
@@ -25,5 +28,5 @@ func _collect(body: Node2D) -> void:
 	if collected or not body.is_in_group("player") or not body.is_physics_processing():
 		return
 	collected = true
-	body.equip_sword()
+	body.equip_weapon(weapon)
 	queue_free()

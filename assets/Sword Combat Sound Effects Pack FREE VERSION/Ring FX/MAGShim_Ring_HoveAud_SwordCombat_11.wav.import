@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://dne7u1ko75hjl"
+path="res://.godot/imported/MAGShim_Ring_HoveAud_SwordCombat_11.wav-9ec9c6d08fd35b3b80bfa5685b298d8a.sample"
+
+[deps]
+
+source_file="res://assets/Sword Combat Sound Effects Pack FREE VERSION/Ring FX/MAGShim_Ring_HoveAud_SwordCombat_11.wav"
+dest_files=["res://.godot/imported/MAGShim_Ring_HoveAud_SwordCombat_11.wav-9ec9c6d08fd35b3b80bfa5685b298d8a.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

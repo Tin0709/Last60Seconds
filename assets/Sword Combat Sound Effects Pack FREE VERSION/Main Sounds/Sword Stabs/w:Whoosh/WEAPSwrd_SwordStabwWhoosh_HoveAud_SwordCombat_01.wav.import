@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://ok3hf1digs86"
+path="res://.godot/imported/WEAPSwrd_SwordStabwWhoosh_HoveAud_SwordCombat_01.wav-835125048bf8ab5e0403dabd58f48965.sample"
+
+[deps]
+
+source_file="res://assets/Sword Combat Sound Effects Pack FREE VERSION/Main Sounds/Sword Stabs/w:Whoosh/WEAPSwrd_SwordStabwWhoosh_HoveAud_SwordCombat_01.wav"
+dest_files=["res://.godot/imported/WEAPSwrd_SwordStabwWhoosh_HoveAud_SwordCombat_01.wav-835125048bf8ab5e0403dabd58f48965.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://727uhvr0ukfw"
+path="res://.godot/imported/VOXScrm_DamageGrunt_HoveAudio_SwordCombat_01.wav-ddd28a2060fae6484e27ce537f67b58d.sample"
+
+[deps]
+
+source_file="res://assets/Sword Combat Sound Effects Pack FREE VERSION/Voicelines/Damage Grunts/VOXScrm_DamageGrunt_HoveAudio_SwordCombat_01.wav"
+dest_files=["res://.godot/imported/VOXScrm_DamageGrunt_HoveAudio_SwordCombat_01.wav-ddd28a2060fae6484e27ce537f67b58d.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

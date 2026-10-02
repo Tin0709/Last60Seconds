@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://ddsrm7tj38uhj"
+path="res://.godot/imported/308 Magazine Full WAV.wav-45b94c4f4c1c8607ee20a3ab53d662f9.sample"
+
+[deps]
+
+source_file="res://assets/Snake's Authentic Gun Sounds/Reloads, Cycling & More/WAV/308 Magazine Full WAV.wav"
+dest_files=["res://.godot/imported/308 Magazine Full WAV.wav-45b94c4f4c1c8607ee20a3ab53d662f9.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

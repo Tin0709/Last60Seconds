@@ -4,11 +4,12 @@ const TEXTURE = preload("res://assets/Pixel Crawler/Weapons/Wood/Wood.png")
 const REGION = Rect2(32, 16, 16, 32)
 const DustVFX = preload("res://dust_vfx.gd")
 const HIT_SOUNDS = [
-	preload("res://assets/audio/combat/impactPunch_heavy_000.ogg"),
-	preload("res://assets/audio/combat/impactPunch_heavy_001.ogg"),
-	preload("res://assets/audio/combat/impactPunch_heavy_002.ogg"),
-	preload("res://assets/audio/combat/impactPunch_heavy_003.ogg"),
-	preload("res://assets/audio/combat/impactPunch_heavy_004.ogg"),
+	preload("res://assets/Sword Combat Sound Effects Pack FREE VERSION/Main Sounds/Sword Collisions/Base Wood/WEAPSwrd_BaseWood_HoveAud_SwordCombat_03.wav"),
+	preload("res://assets/Sword Combat Sound Effects Pack FREE VERSION/Main Sounds/Sword Collisions/Base Wood/WEAPSwrd_BaseWood_HoveAud_SwordCombat_06.wav"),
+]
+const SWING_SOUNDS = [
+	preload("res://assets/Sword Combat Sound Effects Pack FREE VERSION/Whooshes/WHSH_Whoosh_HoveAud_SwordCombat_07.wav"),
+	preload("res://assets/Sword Combat Sound Effects Pack FREE VERSION/Whooshes/WHSH_Whoosh_HoveAud_SwordCombat_26.wav"),
 ]
 const DEATH_SOUNDS = [
 	preload("res://assets/audio/combat/impactSoft_medium_000.ogg"),
@@ -29,6 +30,8 @@ var slash: AnimatedSprite2D
 var attack_direction: Vector2 = Vector2.RIGHT
 var hit_enemies: Dictionary = {}
 var impact_sound: AudioStreamPlayer
+var swing_sound: AudioStreamPlayer
+var swing_tween: Tween
 var audio_rng = RandomNumberGenerator.new()
 var feedback_played: bool = false
 var death_feedback_played: bool = false
@@ -38,6 +41,10 @@ func _ready() -> void:
 	impact_sound = AudioStreamPlayer.new()
 	impact_sound.max_polyphony = 1
 	add_child(impact_sound)
+	swing_sound = AudioStreamPlayer.new()
+	swing_sound.volume_db = -15.0
+	swing_sound.max_polyphony = 1
+	add_child(swing_sound)
 	if slices == null:
 		slices = SpriteFrames.new()
 		for direction in range(3):
@@ -89,25 +96,31 @@ func face(direction: Vector2) -> void:
 	blade.z_index = -1 if direction == Vector2.UP else 0
 
 func attack(direction: Vector2) -> void:
+	if not visible or not get_parent().is_physics_processing():
+		return
 	face(direction)
 	attack_direction = direction
 	hit_enemies.clear()
 	feedback_played = false
 	death_feedback_played = false
 	attacking = true
+	swing_sound.stream = SWING_SOUNDS[audio_rng.randi_range(0, SWING_SOUNDS.size() - 1)]
+	swing_sound.pitch_scale = audio_rng.randf_range(0.95, 1.05)
+	swing_sound.play()
 	slash.visible = true
 	slash.flip_h = direction == Vector2.LEFT
 	slash.play(&"up" if direction == Vector2.UP else (&"down" if direction == Vector2.DOWN else &"side"))
 	var resting_rotation = blade.rotation
 	blade.rotation -= 0.8
-	create_tween().tween_property(blade, "rotation", resting_rotation + 0.8, 0.28)
+	swing_tween = create_tween()
+	swing_tween.tween_property(blade, "rotation", resting_rotation + 0.8, 0.28)
 
 func _physics_process(_delta: float) -> void:
 	_check_hits()
 
 func _check_hits() -> void:
 	# Frame 3 contains the visible Slice arc; windup and recovery cannot hit.
-	if not attacking or slash.frame != 3 or not get_parent().is_physics_processing():
+	if not attacking or not visible or slash.frame != 3 or not get_parent().is_physics_processing():
 		return
 	var hit = false
 	var killed = false
@@ -129,7 +142,7 @@ func _check_hits() -> void:
 		# One voice per swing; a later kill can replace the hit with a distinct thud.
 		var sounds = DEATH_SOUNDS if killed else HIT_SOUNDS
 		impact_sound.stream = sounds[audio_rng.randi_range(0, sounds.size() - 1)]
-		impact_sound.volume_db = -12.0 if killed else -15.0
+		impact_sound.volume_db = -12.0 if killed else -10.0
 		impact_sound.pitch_scale = audio_rng.randf_range(0.78, 0.86) if killed else audio_rng.randf_range(0.95, 1.05)
 		impact_sound.play()
 		feedback_played = true
@@ -138,3 +151,12 @@ func _check_hits() -> void:
 func _finish_attack() -> void:
 	attacking = false
 	slash.visible = false
+
+func cancel_attack() -> void:
+	if swing_tween != null and swing_tween.is_valid():
+		swing_tween.kill()
+	attacking = false
+	slash.stop()
+	slash.visible = false
+	impact_sound.stop()
+	swing_sound.stop()

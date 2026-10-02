@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bbumay6kr4i6a"
+path="res://.godot/imported/556 Spray Slow MP3.mp3-4fd9af1e6759ed105f2b14378591610d.mp3str"
+
+[deps]
+
+source_file="res://assets/Snake's Authentic Gun Sounds/Full Sound/5.56/MP3/556 Spray Slow MP3.mp3"
+dest_files=["res://.godot/imported/556 Spray Slow MP3.mp3-4fd9af1e6759ed105f2b14378591610d.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

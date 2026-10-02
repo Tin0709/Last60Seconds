@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://dqaonsgmvgtwd"
+path="res://.godot/imported/WEAPSwrd_WoodwWhoosh_HoveAud_SwordCombat_03.wav-ea94f636d203a4ab4d6c9c265380d66d.sample"
+
+[deps]
+
+source_file="res://assets/Sword Combat Sound Effects Pack FREE VERSION/Main Sounds/Sword Collisions/Wood Combo/WEAPSwrd_WoodwWhoosh_HoveAud_SwordCombat_03.wav"
+dest_files=["res://.godot/imported/WEAPSwrd_WoodwWhoosh_HoveAud_SwordCombat_03.wav-ea94f636d203a4ab4d6c9c265380d66d.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

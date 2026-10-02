@@ -5,6 +5,7 @@ const TREES = preload("res://assets/Pixel Crawler/Environment/Props/Static/Trees
 const FIRS = preload("res://assets/Pixel Crawler/Environment/Props/Static/Trees/Model_02/Size_03.png")
 const ROCKS = preload("res://assets/Pixel Crawler/Environment/Props/Static/Rocks.png")
 const VEGETATION = preload("res://assets/Pixel Crawler/Environment/Props/Static/Vegetation.png")
+const BerryPickup = preload("res://berry_pickup.gd")
 
 var solid_positions: Array[Vector2] = []
 var clearing: Rect2
@@ -106,6 +107,35 @@ func _ready() -> void:
 			if not central and rng.randf() < 0.08:
 				var region = Rect2(rng.randi_range(0, 1) * 48, rng.randi_range(0, 2) * 32, 48, 32)
 				add_prop($Decorations, VEGETATION, region, point, 0.0, rng.randf() < 0.5)
+	scatter_berries(bounds)
+
+func scatter_berries(bounds: Rect2) -> void:
+	var berry_rng = RandomNumberGenerator.new()
+	berry_rng.seed = 604
+	# Loose spacing across the map, without altering the environment's random stream.
+	for x in range(6):
+		for y in range(3):
+			for attempt in range(8):
+				var point = bounds.position + (Vector2(x, y) + Vector2(berry_rng.randf_range(0.2, 0.8), berry_rng.randf_range(0.2, 0.8))) * bounds.size / Vector2(6, 3)
+				if not bounds.grow(-80).has_point(point):
+					continue
+				var crowded = false
+				for cover in canopy_rects:
+					if cover.grow(24).has_point(point):
+						crowded = true
+						break
+				if not crowded:
+					for detail in detail_positions:
+						if point.distance_squared_to(detail) < 28.0 * 28.0:
+							crowded = true
+							break
+				if crowded:
+					continue
+				var berry = BerryPickup.new()
+				berry.position = point.round()
+				berry.add_to_group("berries")
+				add_child(berry)
+				break
 
 func _process(delta: float) -> void:
 	# Match the player's visible head/body, rather than the collision circle at its feet.

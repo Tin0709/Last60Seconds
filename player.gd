@@ -26,6 +26,7 @@ var footstep_rng = RandomNumberGenerator.new()
 var footstep_distance: float = STEP_DISTANCE
 var last_footstep: int = -1
 var has_sword: bool = false
+var equipped_weapon: StringName = &""
 var facing_direction: Vector2 = Vector2.RIGHT
 var attack_cooldown: float = 0.0
 
@@ -47,10 +48,17 @@ func _physics_process(delta):
 			facing_direction = Vector2.RIGHT if direction.x > 0.0 else Vector2.LEFT
 		else:
 			facing_direction = Vector2.DOWN if direction.y > 0.0 else Vector2.UP
-	$Sword.face(facing_direction)
-	if has_sword and attack_cooldown == 0.0 and Input.is_action_just_pressed("attack"):
-		attack_cooldown = 0.4
-		$Sword.attack(facing_direction)
+	if equipped_weapon == &"sword":
+		$Sword.face(facing_direction)
+	elif equipped_weapon == &"gun":
+		$Gun.face(facing_direction)
+	if equipped_weapon != &"" and attack_cooldown == 0.0 and Input.is_action_just_pressed("attack"):
+		if equipped_weapon == &"sword":
+			attack_cooldown = 0.4
+			$Sword.attack(facing_direction)
+		else:
+			attack_cooldown = 0.22
+			$Gun.fire(facing_direction)
 
 	velocity = direction * speed
 	if knockback_time_remaining > 0.0:
@@ -81,8 +89,23 @@ func stop_footsteps() -> void:
 	footstep_distance = STEP_DISTANCE
 
 func equip_sword() -> void:
-	has_sword = true
-	$Sword.visible = true
+	equip_weapon(&"sword")
+
+func equip_weapon(weapon: StringName) -> void:
+	$Sword.cancel_attack()
+	$Gun.stop_combat()
+	equipped_weapon = weapon
+	has_sword = weapon == &"sword"
+	$Sword.visible = has_sword
+	$Gun.visible = weapon == &"gun"
+
+func heal_one_heart() -> bool:
+	if not is_physics_processing() or health <= 0 or health >= 5:
+		return false
+	health = mini(health + 1, 5)
+	$HealSound.play()
+	health_changed.emit(health)
+	return true
 
 
 func take_damage(enemy_position: Vector2) -> bool:

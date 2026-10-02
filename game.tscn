@@ -12,6 +12,8 @@
 [ext_resource type="Script" path="res://character_effects.gd" id="10_effects"]
 [ext_resource type="Script" path="res://sword.gd" id="11_sword"]
 [ext_resource type="Script" path="res://sword_pickup.gd" id="12_pickup"]
+[ext_resource type="Script" path="res://gun.gd" id="13_gun"]
+[ext_resource type="AudioStream" path="res://assets/Sword Combat Sound Effects Pack FREE VERSION/Ring FX/MAGShim_Ring_HoveAud_SwordCombat_01.wav" id="14_heal"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_jpyye"]
 radius = 20.0
@@ -68,12 +70,40 @@ volume_db = -9.0
 [node name="FootstepSound" type="AudioStreamPlayer" parent="Player"]
 volume_db = -17.0
 
+[node name="HealSound" type="AudioStreamPlayer" parent="Player"]
+stream = ExtResource("14_heal")
+volume_db = -22.0
+
 [node name="Sword" type="Node2D" parent="Player"]
 visible = false
 script = ExtResource("11_sword")
 
 [node name="SwordPickups" type="Node2D" parent="."]
 y_sort_enabled = true
+
+[node name="Gun" type="Node2D" parent="Player"]
+visible = false
+script = ExtResource("13_gun")
+
+[node name="Gun1" type="Area2D" parent="SwordPickups"]
+position = Vector2(830, 780)
+script = ExtResource("12_pickup")
+weapon = &"gun"
+
+[node name="Gun2" type="Area2D" parent="SwordPickups"]
+position = Vector2(1260, 1380)
+script = ExtResource("12_pickup")
+weapon = &"gun"
+
+[node name="Gun3" type="Area2D" parent="SwordPickups"]
+position = Vector2(1920, 610)
+script = ExtResource("12_pickup")
+weapon = &"gun"
+
+[node name="Gun4" type="Area2D" parent="SwordPickups"]
+position = Vector2(2310, 1490)
+script = ExtResource("12_pickup")
+weapon = &"gun"
 
 [node name="Sword1" type="Area2D" parent="SwordPickups"]
 position = Vector2(680, 550)

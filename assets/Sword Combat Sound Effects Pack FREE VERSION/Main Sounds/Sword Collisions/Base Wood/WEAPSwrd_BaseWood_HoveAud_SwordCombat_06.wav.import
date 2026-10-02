@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://bs2gbsva8lc6o"
+path="res://.godot/imported/WEAPSwrd_BaseWood_HoveAud_SwordCombat_06.wav-f887e87c95142da047c4ddd27a45cd53.sample"
+
+[deps]
+
+source_file="res://assets/Sword Combat Sound Effects Pack FREE VERSION/Main Sounds/Sword Collisions/Base Wood/WEAPSwrd_BaseWood_HoveAud_SwordCombat_06.wav"
+dest_files=["res://.godot/imported/WEAPSwrd_BaseWood_HoveAud_SwordCombat_06.wav-f887e87c95142da047c4ddd27a45cd53.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2
