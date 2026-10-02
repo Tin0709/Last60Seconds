@@ -6,7 +6,7 @@ const ENEMY_VISUALS = [
 	preload("res://skeleton_warrior_frames.tres"),
 ]
 
-@export var world_bounds: Rect2 = Rect2(0, 0, 2400, 1600)
+@export var world_bounds: Rect2 = Rect2(0, 0, 3200, 2240)
 
 var time_remaining: float = 60.0
 var game_ended: bool = false

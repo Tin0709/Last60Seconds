@@ -29,9 +29,9 @@ func _physics_process(delta):
 	keep_inside_world()
 
 
-func take_damage(enemy_position: Vector2) -> void:
+func take_damage(enemy_position: Vector2) -> bool:
 	if damage_cooldown > 0.0 or health <= 0:
-		return
+		return false
 	health -= 1
 	damage_cooldown = 1.0
 	knockback_direction = enemy_position.direction_to(global_position)
@@ -40,6 +40,7 @@ func take_damage(enemy_position: Vector2) -> void:
 	knockback_time_remaining = 0.12
 	show_hit_feedback()
 	health_changed.emit(health)
+	return true
 
 
 func show_hit_feedback() -> void:
