@@ -3,6 +3,9 @@
 [ext_resource type="Script" uid="uid://b3wxohq16ktsi" path="res://player.gd" id="1_80nbo"]
 [ext_resource type="Texture2D" uid="uid://eq6dcm817lai" path="res://icon.svg" id="2_e2o6t"]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_jpyye"]
+radius = 20.0
+
 [node name="Game" type="Node2D" unique_id=1318419053]
 
 [node name="Player" type="CharacterBody2D" parent="." unique_id=1518452810]
@@ -13,3 +16,6 @@ script = ExtResource("1_80nbo")
 position = Vector2(500, 300)
 scale = Vector2(0.3, 0.3)
 texture = ExtResource("2_e2o6t")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=2014221652]
+shape = SubResource("CircleShape2D_jpyye")
