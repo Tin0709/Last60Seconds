@@ -2,13 +2,17 @@
 
 [ext_resource type="Script" uid="uid://b3wxohq16ktsi" path="res://player.gd" id="1_80nbo"]
 [ext_resource type="Texture2D" uid="uid://eq6dcm817lai" path="res://icon.svg" id="2_e2o6t"]
+[ext_resource type="Script" uid="uid://da5k5o14fmhip" path="res://enemy.gd" id="3_feb5d"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_jpyye"]
 radius = 20.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_orua6"]
+radius = 18.0
+
 [node name="Game" type="Node2D" unique_id=1318419053]
 
-[node name="Player" type="CharacterBody2D" parent="." unique_id=1518452810]
+[node name="Player" type="CharacterBody2D" parent="." unique_id=1518452810 groups=["player"]]
 position = Vector2(11, 5)
 script = ExtResource("1_80nbo")
 
@@ -19,3 +23,14 @@ texture = ExtResource("2_e2o6t")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=2014221652]
 shape = SubResource("CircleShape2D_jpyye")
+
+[node name="Enemy" type="CharacterBody2D" parent="Player" unique_id=501922679]
+script = ExtResource("3_feb5d")
+
+[node name="Sprite2D" type="Sprite2D" parent="Player/Enemy" unique_id=2033608354]
+modulate = Color(0.9906227, 0, 0.21160582, 1)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("2_e2o6t")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/Enemy" unique_id=1254806273]
+shape = SubResource("CircleShape2D_orua6")
