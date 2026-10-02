@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://world.gd" id="5_world"]
 [ext_resource type="Theme" path="res://ui_theme.tres" id="8_ui"]
 [ext_resource type="Script" path="res://health_display.gd" id="9_health"]
+[ext_resource type="Script" path="res://character_effects.gd" id="10_effects"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_jpyye"]
 radius = 20.0
@@ -52,6 +53,10 @@ directional = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=2014221652]
 shape = SubResource("CircleShape2D_jpyye")
 
+[node name="Effects" type="Node2D" parent="Player"]
+z_index = -1
+script = ExtResource("10_effects")
+
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position_smoothing_enabled = false
 
@@ -70,6 +75,11 @@ directional = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Enemy" unique_id=1254806273]
 shape = SubResource("CircleShape2D_orua6")
+
+[node name="Effects" type="Node2D" parent="Enemy"]
+z_index = -1
+script = ExtResource("10_effects")
+emerge_on_spawn = true
 
 [node name="HUD" type="CanvasLayer" parent="."]
 

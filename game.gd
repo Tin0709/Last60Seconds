@@ -65,8 +65,8 @@ func spawn_enemy() -> void:
 			continue
 		var enemy = $Enemy.duplicate()
 		enemy.get_node("AnimatedSprite2D").sprite_frames = ENEMY_VISUALS.pick_random()
+		enemy.position = to_local(spawn_position)
 		add_child(enemy)
-		enemy.global_position = spawn_position
 		return
 
 func end_game(message: String) -> void:
