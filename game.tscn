@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://da5k5o14fmhip" path="res://enemy.gd" id="3_feb5d"]
 [ext_resource type="Script" path="res://game.gd" id="4_countdown"]
 [ext_resource type="Script" path="res://world.gd" id="5_world"]
+[ext_resource type="Theme" path="res://ui_theme.tres" id="8_ui"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_jpyye"]
 radius = 20.0
@@ -72,39 +73,49 @@ shape = SubResource("CircleShape2D_orua6")
 [node name="HUD" type="CanvasLayer" parent="."]
 
 [node name="TimeLabel" type="Label" parent="HUD"]
+texture_filter = 1
 offset_left = 20.0
 offset_top = 20.0
-offset_right = 200.0
-offset_bottom = 60.0
+offset_right = 252.0
+offset_bottom = 64.0
 mouse_filter = 2
-theme_override_font_sizes/font_size = 28
+theme = ExtResource("8_ui")
 text = "Time: 60"
+vertical_alignment = 1
 
 [node name="SurvivedLabel" type="Label" parent="HUD"]
 visible = false
+texture_filter = 1
 offset_left = 20.0
-offset_top = 110.0
-offset_right = 240.0
-offset_bottom = 150.0
+offset_top = 136.0
+offset_right = 304.0
+offset_bottom = 196.0
 mouse_filter = 2
+theme = ExtResource("8_ui")
 theme_override_font_sizes/font_size = 28
 text = "SURVIVED"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="HealthLabel" type="Label" parent="HUD"]
+texture_filter = 1
 offset_left = 20.0
-offset_top = 65.0
-offset_right = 200.0
-offset_bottom = 105.0
+offset_top = 72.0
+offset_right = 252.0
+offset_bottom = 116.0
 mouse_filter = 2
-theme_override_font_sizes/font_size = 28
+theme = ExtResource("8_ui")
 text = "Health: 3"
+vertical_alignment = 1
 
 [node name="RestartButton" type="Button" parent="HUD"]
 visible = false
+texture_filter = 1
 offset_left = 20.0
-offset_top = 160.0
-offset_right = 180.0
-offset_bottom = 205.0
+offset_top = 208.0
+offset_right = 304.0
+offset_bottom = 260.0
+theme = ExtResource("8_ui")
 text = "RESTART"
 
 [connection signal="pressed" from="HUD/RestartButton" to="." method="_on_restart_button_pressed"]
