@@ -4,6 +4,7 @@ signal health_changed(health: int)
 
 const FOOTSTEP_SOUNDS = [preload("res://assets/audio/footsteps/footstep_grass_004.ogg")]
 const STEP_DISTANCE: float = 72.0
+const WeaponPickup = preload("res://sword_pickup.gd")
 
 const DAMAGE_SOUNDS = [
 	preload("res://assets/audio/combat/impactPunch_heavy_000.ogg"),
@@ -50,15 +51,17 @@ func _physics_process(delta):
 			facing_direction = Vector2.DOWN if direction.y > 0.0 else Vector2.UP
 	if equipped_weapon == &"sword":
 		$Sword.face(facing_direction)
-	elif equipped_weapon == &"gun" and direction != Vector2.ZERO:
+	elif equipped_weapon != &"" and direction != Vector2.ZERO:
 		$Gun.face(facing_direction)
-	if equipped_weapon != &"" and attack_cooldown == 0.0 and Input.is_action_just_pressed("attack"):
+	if equipped_weapon != &"" and attack_cooldown == 0.0:
 		if equipped_weapon == &"sword":
-			attack_cooldown = 0.4
-			$Sword.attack(facing_direction)
+			if Input.is_action_just_pressed("attack"):
+				attack_cooldown = 0.4
+				$Sword.attack(facing_direction)
 		else:
-			attack_cooldown = 0.22
-			$Gun.fire(facing_direction)
+			if Input.is_action_pressed("attack"):
+				attack_cooldown = $Gun.settings.interval
+				$Gun.fire(facing_direction)
 
 	velocity = direction * speed
 	if knockback_time_remaining > 0.0:
@@ -92,15 +95,53 @@ func equip_sword() -> void:
 	equip_weapon(&"sword")
 
 func equip_weapon(weapon: StringName) -> void:
+	if equipped_weapon != &"":
+		_drop_weapon(equipped_weapon)
 	$Sword.cancel_attack()
 	$Gun.stop_combat()
 	equipped_weapon = weapon
+	attack_cooldown = 0.0
 	has_sword = weapon == &"sword"
 	$Sword.visible = has_sword
-	$Gun.visible = weapon == &"gun"
+	$Gun.visible = weapon != &"sword"
+	if not has_sword:
+		$Gun.set_weapon(weapon)
+
+func _drop_weapon(weapon: StringName) -> void:
+	var drop_point = global_position
+	var fallback = global_position
+	var found = false
+	var shape = CircleShape2D.new()
+	shape.radius = 20.0
+	var query = PhysicsShapeQueryParameters2D.new()
+	query.shape = shape
+	query.collision_mask = 1
+	query.exclude = [get_rid()]
+	for distance in [56.0, 88.0, 120.0, 160.0]:
+		for index in range(8):
+			var offset = Vector2.from_angle(facing_direction.angle() + PI + index * TAU / 8.0) * distance
+			var point = global_position + offset
+			if not world_bounds.grow(-24.0).has_point(point):
+				continue
+			fallback = point
+			query.transform = Transform2D(0.0, point)
+			if get_world_2d().direct_space_state.intersect_shape(query, 1).is_empty():
+				drop_point = point
+				found = true
+				break
+		if found:
+			break
+	if not found:
+		drop_point = fallback
+	var dropped = WeaponPickup.new()
+	dropped.weapon = weapon
+	dropped.pickup_delay = 0.35
+	dropped.position = get_parent().to_local(drop_point.round())
+	dropped.add_to_group("dropped_weapons")
+	get_parent().add_child.call_deferred(dropped)
 
 func heal_one_heart() -> bool:
-	if not is_physics_processing() or health <= 0 or health >= 5:
+	if not is_physics_processing() or not can_process() or health <= 0 or health >= 5:
 		return false
 	health = mini(health + 1, 5)
 	$HealSound.play()

@@ -14,6 +14,8 @@
 [ext_resource type="Script" path="res://sword_pickup.gd" id="12_pickup"]
 [ext_resource type="Script" path="res://gun.gd" id="13_gun"]
 [ext_resource type="AudioStream" path="res://assets/Sword Combat Sound Effects Pack FREE VERSION/Ring FX/MAGShim_Ring_HoveAud_SwordCombat_01.wav" id="14_heal"]
+[ext_resource type="Script" path="res://pause_menu.gd" id="15_pause"]
+[ext_resource type="AudioStream" path="res://assets/audio/ui/click3.ogg" id="16_pickup"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_jpyye"]
 radius = 20.0
@@ -78,6 +80,10 @@ volume_db = -22.0
 visible = false
 script = ExtResource("11_sword")
 
+[node name="PickupSound" type="AudioStreamPlayer" parent="Player"]
+stream = ExtResource("16_pickup")
+volume_db = -18.0
+
 [node name="SwordPickups" type="Node2D" parent="."]
 y_sort_enabled = true
 
@@ -93,17 +99,57 @@ weapon = &"gun"
 [node name="Gun2" type="Area2D" parent="SwordPickups"]
 position = Vector2(1260, 1380)
 script = ExtResource("12_pickup")
-weapon = &"gun"
+weapon = &"pistol"
 
 [node name="Gun3" type="Area2D" parent="SwordPickups"]
 position = Vector2(1920, 610)
 script = ExtResource("12_pickup")
-weapon = &"gun"
+weapon = &"smg"
 
 [node name="Gun4" type="Area2D" parent="SwordPickups"]
 position = Vector2(2310, 1490)
 script = ExtResource("12_pickup")
+weapon = &"shotgun"
+
+[node name="Sniper1" type="Area2D" parent="SwordPickups"]
+position = Vector2(1460, 1110)
+script = ExtResource("12_pickup")
+weapon = &"sniper"
+
+[node name="Launcher1" type="Area2D" parent="SwordPickups"]
+position = Vector2(2220, 750)
+script = ExtResource("12_pickup")
+weapon = &"launcher"
+
+[node name="Rifle2" type="Area2D" parent="SwordPickups"]
+position = Vector2(1800, 1560)
+script = ExtResource("12_pickup")
 weapon = &"gun"
+
+[node name="Pistol2" type="Area2D" parent="SwordPickups"]
+position = Vector2(730, 1250)
+script = ExtResource("12_pickup")
+weapon = &"pistol"
+
+[node name="SMG2" type="Area2D" parent="SwordPickups"]
+position = Vector2(2380, 1280)
+script = ExtResource("12_pickup")
+weapon = &"smg"
+
+[node name="Shotgun2" type="Area2D" parent="SwordPickups"]
+position = Vector2(1350, 590)
+script = ExtResource("12_pickup")
+weapon = &"shotgun"
+
+[node name="Sniper2" type="Area2D" parent="SwordPickups"]
+position = Vector2(2040, 920)
+script = ExtResource("12_pickup")
+weapon = &"sniper"
+
+[node name="Launcher2" type="Area2D" parent="SwordPickups"]
+position = Vector2(970, 1550)
+script = ExtResource("12_pickup")
+weapon = &"launcher"
 
 [node name="Sword1" type="Area2D" parent="SwordPickups"]
 position = Vector2(680, 550)
@@ -155,6 +201,7 @@ volume_db = -12.0
 max_distance = 900.0
 
 [node name="UISound" type="AudioStreamPlayer" parent="."]
+process_mode = 3
 volume_db = -18.0
 
 [node name="HUD" type="CanvasLayer" parent="."]
@@ -216,6 +263,63 @@ offset_bottom = 98.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("8_ui")
+text = "RESTART"
+
+[node name="PauseMenu" type="CanvasLayer" parent="."]
+process_mode = 3
+layer = 10
+script = ExtResource("15_pause")
+
+[node name="Overlay" type="Control" parent="PauseMenu"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("8_ui")
+
+[node name="Backdrop" type="ColorRect" parent="PauseMenu/Overlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.03, 0.05, 0.03, 0.72)
+mouse_filter = 2
+
+[node name="Center" type="CenterContainer" parent="PauseMenu/Overlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="PauseMenu/Overlay/Center"]
+custom_minimum_size = Vector2(300, 220)
+layout_mode = 2
+
+[node name="Buttons" type="VBoxContainer" parent="PauseMenu/Overlay/Center/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Title" type="Label" parent="PauseMenu/Overlay/Center/Panel/Buttons"]
+layout_mode = 2
+text = "PAUSED"
+horizontal_alignment = 1
+
+[node name="Resume" type="Button" parent="PauseMenu/Overlay/Center/Panel/Buttons"]
+layout_mode = 2
+focus_mode = 0
+text = "RESUME"
+
+[node name="Restart" type="Button" parent="PauseMenu/Overlay/Center/Panel/Buttons"]
+layout_mode = 2
+focus_mode = 0
 text = "RESTART"
 
 [connection signal="pressed" from="HUD/RestartButton" to="." method="_on_restart_button_pressed"]

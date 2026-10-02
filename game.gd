@@ -89,6 +89,7 @@ func end_game(message: String) -> void:
 	if game_ended:
 		return
 	game_ended = true
+	$PauseMenu.set_paused(false)
 	survived_label.text = message
 	survived_label.show()
 	$HUD/RestartButton.show()
@@ -99,6 +100,7 @@ func end_game(message: String) -> void:
 	$Player/Sword.cancel_attack()
 	$Player/Gun.stop_combat()
 	$Player/HealSound.stop()
+	$Player/PickupSound.stop()
 	for bullet in get_tree().get_nodes_in_group("bullets"):
 		bullet.spent = true
 		bullet.queue_free()
@@ -114,7 +116,12 @@ func _exit_tree() -> void:
 	if is_instance_valid(enemy_template):
 		enemy_template.free()
 
+func play_ui_click() -> void:
+	$UISound.stream = CLICK_SOUNDS[audio_rng.randi_range(0, CLICK_SOUNDS.size() - 1)]
+	$UISound.play()
+
 func _on_restart_button_pressed() -> void:
+	$PauseMenu.set_paused(false)
 	# Let the short click finish across the immediate scene reload.
 	var sound: AudioStreamPlayer = $UISound
 	sound.stream = CLICK_SOUNDS[audio_rng.randi_range(0, CLICK_SOUNDS.size() - 1)]
