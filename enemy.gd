@@ -20,5 +20,5 @@ func _physics_process(_delta):
 
 	for index in range(get_slide_collision_count()):
 		if get_slide_collision(index).get_collider() == player:
-			player.take_damage()
+			player.take_damage(global_position)
 			break

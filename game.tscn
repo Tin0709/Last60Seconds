@@ -25,7 +25,7 @@ texture = ExtResource("2_e2o6t")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=2014221652]
 shape = SubResource("CircleShape2D_jpyye")
 
-[node name="Enemy" type="CharacterBody2D" parent="." unique_id=501922679]
+[node name="Enemy" type="CharacterBody2D" parent="." unique_id=501922679 groups=["enemies"]]
 position = Vector2(200, 300)
 script = ExtResource("3_feb5d")
 
