@@ -17,3 +17,8 @@ func _physics_process(_delta):
 	velocity = direction * speed
 
 	move_and_slide()
+
+	for index in range(get_slide_collision_count()):
+		if get_slide_collision(index).get_collider() == player:
+			player.take_damage()
+			break
