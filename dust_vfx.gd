@@ -30,7 +30,7 @@ static func play(parent: Node2D, kind: Kind, point: Vector2, size: float, opacit
 	effect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	effect.scale = Vector2.ONE * size
 	effect.offset = OFFSETS[kind]
-	effect.modulate = Color(0.85, 0.82, 0.70, opacity) if kind != Kind.HIT else Color.WHITE
+	effect.modulate = Color(0.85, 0.82, 0.70, opacity) if kind != Kind.HIT else Color(1, 1, 1, opacity)
 	effect.z_index = -1 if kind == Kind.STEP else 0
 	# A fixed world position and foot-level sort origin keep bursts in the environment.
 	effect.position = parent.to_local(point.round())

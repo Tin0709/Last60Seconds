@@ -2,6 +2,21 @@ extends Node2D
 
 const TEXTURE = preload("res://assets/Pixel Crawler/Weapons/Wood/Wood.png")
 const REGION = Rect2(32, 16, 16, 32)
+const DustVFX = preload("res://dust_vfx.gd")
+const HIT_SOUNDS = [
+	preload("res://assets/audio/combat/impactPunch_heavy_000.ogg"),
+	preload("res://assets/audio/combat/impactPunch_heavy_001.ogg"),
+	preload("res://assets/audio/combat/impactPunch_heavy_002.ogg"),
+	preload("res://assets/audio/combat/impactPunch_heavy_003.ogg"),
+	preload("res://assets/audio/combat/impactPunch_heavy_004.ogg"),
+]
+const DEATH_SOUNDS = [
+	preload("res://assets/audio/combat/impactSoft_medium_000.ogg"),
+	preload("res://assets/audio/combat/impactSoft_medium_001.ogg"),
+	preload("res://assets/audio/combat/impactSoft_medium_002.ogg"),
+	preload("res://assets/audio/combat/impactSoft_medium_003.ogg"),
+	preload("res://assets/audio/combat/impactSoft_medium_004.ogg"),
+]
 const SLICE_SHEETS = [
 	preload("res://assets/Pixel Crawler/Entities/Characters/Body_A/Animations/Slice_Base/Slice_Side-Sheet.png"),
 	preload("res://assets/Pixel Crawler/Entities/Characters/Body_A/Animations/Slice_Base/Slice_Up-Sheet.png"),
@@ -13,8 +28,16 @@ var blade: Sprite2D
 var slash: AnimatedSprite2D
 var attack_direction: Vector2 = Vector2.RIGHT
 var hit_enemies: Dictionary = {}
+var impact_sound: AudioStreamPlayer
+var audio_rng = RandomNumberGenerator.new()
+var feedback_played: bool = false
+var death_feedback_played: bool = false
 
 func _ready() -> void:
+	audio_rng.randomize()
+	impact_sound = AudioStreamPlayer.new()
+	impact_sound.max_polyphony = 1
+	add_child(impact_sound)
 	if slices == null:
 		slices = SpriteFrames.new()
 		for direction in range(3):
@@ -69,6 +92,8 @@ func attack(direction: Vector2) -> void:
 	face(direction)
 	attack_direction = direction
 	hit_enemies.clear()
+	feedback_played = false
+	death_feedback_played = false
 	attacking = true
 	slash.visible = true
 	slash.flip_h = direction == Vector2.LEFT
@@ -84,6 +109,8 @@ func _check_hits() -> void:
 	# Frame 3 contains the visible Slice arc; windup and recovery cannot hit.
 	if not attacking or slash.frame != 3 or not get_parent().is_physics_processing():
 		return
+	var hit = false
+	var killed = false
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		var id = enemy.get_instance_id()
 		if hit_enemies.has(id):
@@ -92,6 +119,21 @@ func _check_hits() -> void:
 		if offset.length_squared() <= 72.0 * 72.0 and (offset == Vector2.ZERO or offset.normalized().dot(attack_direction) >= 0.5):
 			if enemy.take_sword_hit():
 				hit_enemies[id] = true
+				hit = true
+				killed = killed or enemy.dead
+				# Keep crowd hits readable without filling the screen with bursts.
+				if hit_enemies.size() <= 3:
+					DustVFX.play(get_parent().get_parent(), DustVFX.Kind.SPAWN if enemy.dead else DustVFX.Kind.HIT,
+						enemy.global_position, 0.35 if enemy.dead else 0.25, 0.55 if enemy.dead else 0.75)
+	if hit and (not feedback_played or (killed and not death_feedback_played)):
+		# One voice per swing; a later kill can replace the hit with a distinct thud.
+		var sounds = DEATH_SOUNDS if killed else HIT_SOUNDS
+		impact_sound.stream = sounds[audio_rng.randi_range(0, sounds.size() - 1)]
+		impact_sound.volume_db = -12.0 if killed else -15.0
+		impact_sound.pitch_scale = audio_rng.randf_range(0.78, 0.86) if killed else audio_rng.randf_range(0.95, 1.05)
+		impact_sound.play()
+		feedback_played = true
+		death_feedback_played = death_feedback_played or killed
 
 func _finish_attack() -> void:
 	attacking = false
