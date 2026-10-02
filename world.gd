@@ -77,6 +77,29 @@ func _ready() -> void:
 					if not is_on_path(nearby):
 						add_prop($Decorations, VEGETATION, region, nearby)
 
+	# A jittered carpet fills the gaps between patches without moving existing props.
+	rng.seed = 601
+	var vegetation_bounds = bounds.grow(-48.0)
+	for x in range(ceili(vegetation_bounds.size.x / 64.0)):
+		for y in range(ceili(vegetation_bounds.size.y / 64.0)):
+			var point = vegetation_bounds.position + Vector2(x * 64.0, y * 64.0) + Vector2(rng.randf_range(0, 64), rng.randf_range(0, 64))
+			var central = clearing.has_point(point)
+			if rng.randf() > (0.28 if central else 0.90):
+				continue
+			if not vegetation_bounds.has_point(point) or is_on_path(point):
+				continue
+			for detail in range(1 if central else rng.randi_range(1, 2)):
+				var nearby = point + Vector2(rng.randf_range(-18, 18), rng.randf_range(-14, 14))
+				if not vegetation_bounds.has_point(nearby) or is_on_path(nearby):
+					continue
+				var short_plant = central or clearing.has_point(nearby)
+				var region = details[rng.randi_range(0, 1 if short_plant else details.size() - 1)]
+				add_prop($Decorations, VEGETATION, region, nearby, 0.0, rng.randf() < 0.5)
+			# Occasional bushes break up the low cover outside the gameplay clearing.
+			if not central and rng.randf() < 0.08:
+				var region = Rect2(rng.randi_range(0, 1) * 48, rng.randi_range(0, 2) * 32, 48, 32)
+				add_prop($Decorations, VEGETATION, region, point, 0.0, rng.randf() < 0.5)
+
 func build_ground(bounds: Rect2) -> void:
 	var atlas = TileSetAtlasSource.new()
 	atlas.texture = FLOORS
