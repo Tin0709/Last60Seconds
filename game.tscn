@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://eq6dcm817lai" path="res://icon.svg" id="2_e2o6t"]
 [ext_resource type="Script" uid="uid://da5k5o14fmhip" path="res://enemy.gd" id="3_feb5d"]
 [ext_resource type="Script" path="res://game.gd" id="4_countdown"]
+[ext_resource type="Script" path="res://world.gd" id="5_world"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_jpyye"]
 radius = 20.0
@@ -12,10 +13,13 @@ radius = 20.0
 radius = 18.0
 
 [node name="Game" type="Node2D" unique_id=1318419053]
+y_sort_enabled = true
 script = ExtResource("4_countdown")
 
 [node name="World" type="Node2D" parent="."]
 texture_filter = 1
+y_sort_enabled = true
+script = ExtResource("5_world")
 
 [node name="Ground" type="TileMapLayer" parent="World"]
 z_index = -2
@@ -26,6 +30,7 @@ z_index = -1
 collision_enabled = false
 
 [node name="Obstacles" type="TileMapLayer" parent="World"]
+y_sort_enabled = true
 
 [node name="Player" type="CharacterBody2D" parent="." unique_id=1518452810 groups=["player"]]
 position = Vector2(500, 300)
