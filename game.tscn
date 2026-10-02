@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://b3wxohq16ktsi" path="res://player.gd" id="1_80nbo"]
 [ext_resource type="Texture2D" uid="uid://eq6dcm817lai" path="res://icon.svg" id="2_e2o6t"]
 [ext_resource type="Script" uid="uid://da5k5o14fmhip" path="res://enemy.gd" id="3_feb5d"]
+[ext_resource type="Script" path="res://game.gd" id="4_countdown"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_jpyye"]
 radius = 20.0
@@ -11,6 +12,7 @@ radius = 20.0
 radius = 18.0
 
 [node name="Game" type="Node2D" unique_id=1318419053]
+script = ExtResource("4_countdown")
 
 [node name="Player" type="CharacterBody2D" parent="." unique_id=1518452810 groups=["player"]]
 position = Vector2(500, 300)
@@ -34,3 +36,24 @@ texture = ExtResource("2_e2o6t")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Enemy" unique_id=1254806273]
 shape = SubResource("CircleShape2D_orua6")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="TimeLabel" type="Label" parent="HUD"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 200.0
+offset_bottom = 60.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 28
+text = "Time: 60"
+
+[node name="SurvivedLabel" type="Label" parent="HUD"]
+visible = false
+offset_left = 20.0
+offset_top = 65.0
+offset_right = 240.0
+offset_bottom = 105.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 28
+text = "SURVIVED"
