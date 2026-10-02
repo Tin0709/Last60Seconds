@@ -60,9 +60,13 @@ func end_game(message: String) -> void:
 	game_ended = true
 	survived_label.text = message
 	survived_label.show()
+	$HUD/RestartButton.show()
 	set_process(false)
 	$Player.set_physics_process(false)
 	$Player.velocity = Vector2.ZERO
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		enemy.set_physics_process(false)
 		enemy.velocity = Vector2.ZERO
+
+func _on_restart_button_pressed() -> void:
+	get_tree().reload_current_scene()

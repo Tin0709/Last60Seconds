@@ -66,3 +66,13 @@ offset_bottom = 105.0
 mouse_filter = 2
 theme_override_font_sizes/font_size = 28
 text = "Health: 3"
+
+[node name="RestartButton" type="Button" parent="HUD"]
+visible = false
+offset_left = 20.0
+offset_top = 160.0
+offset_right = 180.0
+offset_bottom = 205.0
+text = "RESTART"
+
+[connection signal="pressed" from="HUD/RestartButton" to="." method="_on_restart_button_pressed"]
