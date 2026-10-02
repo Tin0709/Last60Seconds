@@ -11,6 +11,8 @@ static var slices: SpriteFrames
 var attacking: bool = false
 var blade: Sprite2D
 var slash: AnimatedSprite2D
+var attack_direction: Vector2 = Vector2.RIGHT
+var hit_enemies: Dictionary = {}
 
 func _ready() -> void:
 	if slices == null:
@@ -52,6 +54,7 @@ func _ready() -> void:
 	slash.visible = false
 	add_child(slash)
 	slash.animation_finished.connect(_finish_attack)
+	slash.frame_changed.connect(_check_hits)
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	face(Vector2.RIGHT)
 
@@ -64,6 +67,8 @@ func face(direction: Vector2) -> void:
 
 func attack(direction: Vector2) -> void:
 	face(direction)
+	attack_direction = direction
+	hit_enemies.clear()
 	attacking = true
 	slash.visible = true
 	slash.flip_h = direction == Vector2.LEFT
@@ -71,6 +76,22 @@ func attack(direction: Vector2) -> void:
 	var resting_rotation = blade.rotation
 	blade.rotation -= 0.8
 	create_tween().tween_property(blade, "rotation", resting_rotation + 0.8, 0.28)
+
+func _physics_process(_delta: float) -> void:
+	_check_hits()
+
+func _check_hits() -> void:
+	# Frame 3 contains the visible Slice arc; windup and recovery cannot hit.
+	if not attacking or slash.frame != 3 or not get_parent().is_physics_processing():
+		return
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		var id = enemy.get_instance_id()
+		if hit_enemies.has(id):
+			continue
+		var offset: Vector2 = enemy.global_position - global_position
+		if offset.length_squared() <= 72.0 * 72.0 and (offset == Vector2.ZERO or offset.normalized().dot(attack_direction) >= 0.5):
+			if enemy.take_sword_hit():
+				hit_enemies[id] = true
 
 func _finish_attack() -> void:
 	attacking = false

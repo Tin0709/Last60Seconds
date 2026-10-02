@@ -18,6 +18,7 @@ var step_side: float = 1.0
 var rng = RandomNumberGenerator.new()
 var vfx_rng = RandomNumberGenerator.new()
 var step_burst_count: int = 0
+var rise: Tween
 
 @onready var body: CharacterBody2D = get_parent()
 @onready var sprite: AnimatedSprite2D = get_parent().get_node("AnimatedSprite2D")
@@ -29,7 +30,7 @@ func _ready() -> void:
 		# Only the artwork rises; the body remains active at its spawn position.
 		sprite.scale.y = 0.1
 		sprite.position.y = 14.0 - 13.0 * sprite.scale.y
-		var rise = create_tween().set_parallel(true)
+		rise = create_tween().set_parallel(true)
 		rise.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		rise.tween_property(sprite, "scale:y", 2.0, 0.4)
 		rise.tween_property(sprite, "position:y", -12.0, 0.4)
@@ -42,6 +43,10 @@ func _ready() -> void:
 		var sound: AudioStreamPlayer2D = body.get_node("SpawnSound")
 		sound.stream = SPAWN_SOUNDS[audio_rng.randi_range(0, SPAWN_SOUNDS.size() - 1)]
 		sound.play()
+
+func stop_emergence() -> void:
+	if rise != null and rise.is_valid():
+		rise.kill()
 
 func play_step_dust() -> void:
 	step_burst_count += 1

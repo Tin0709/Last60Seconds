@@ -22,12 +22,15 @@ var time_remaining: float = 60.0
 var game_ended: bool = false
 var spawn_time_remaining: float = 5.0
 var audio_rng = RandomNumberGenerator.new()
+var enemy_template: CharacterBody2D
 
 @onready var time_label: Label = $HUD/TimeLabel
 @onready var survived_label: Label = $HUD/SurvivedLabel
 @onready var health_display: Control = $HUD/HealthDisplay
 
 func _ready() -> void:
+	# Keep a live-spawn template even after the original enemy is defeated.
+	enemy_template = $Enemy.duplicate()
 	audio_rng.randomize()
 	$HUD/RestartButton.mouse_entered.connect(_on_restart_button_hovered)
 	$Player.world_bounds = world_bounds
@@ -61,7 +64,7 @@ func _process(delta: float) -> void:
 		spawn_time_remaining = lerpf(5.0, 2.0, progress)
 
 func spawn_enemy() -> void:
-	var radius: float = $Enemy/CollisionShape2D.shape.radius
+	var radius: float = enemy_template.get_node("CollisionShape2D").shape.radius
 	var spawn_bounds = world_bounds.grow(-radius)
 	for attempt in range(8):
 		var spawn_position: Vector2
@@ -76,7 +79,7 @@ func spawn_enemy() -> void:
 				spawn_position = Vector2(randf_range(spawn_bounds.position.x, spawn_bounds.end.x), spawn_bounds.end.y)
 		if spawn_position.distance_to($Player.global_position) < 100.0:
 			continue
-		var enemy = $Enemy.duplicate()
+		var enemy = enemy_template.duplicate()
 		enemy.get_node("AnimatedSprite2D").sprite_frames = ENEMY_VISUALS.pick_random()
 		enemy.position = to_local(spawn_position)
 		add_child(enemy)
@@ -100,6 +103,10 @@ func end_game(message: String) -> void:
 func _on_restart_button_hovered() -> void:
 	$UISound.stream = HOVER_SOUNDS[audio_rng.randi_range(0, HOVER_SOUNDS.size() - 1)]
 	$UISound.play()
+
+func _exit_tree() -> void:
+	if is_instance_valid(enemy_template):
+		enemy_template.free()
 
 func _on_restart_button_pressed() -> void:
 	# Let the short click finish across the immediate scene reload.
