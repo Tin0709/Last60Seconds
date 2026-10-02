@@ -25,12 +25,16 @@ var audio_rng = RandomNumberGenerator.new()
 var footstep_rng = RandomNumberGenerator.new()
 var footstep_distance: float = STEP_DISTANCE
 var last_footstep: int = -1
+var has_sword: bool = false
+var facing_direction: Vector2 = Vector2.RIGHT
+var attack_cooldown: float = 0.0
 
 func _ready() -> void:
 	audio_rng.randomize()
 	footstep_rng.randomize()
 
 func _physics_process(delta):
+	attack_cooldown = maxf(attack_cooldown - delta, 0.0)
 	damage_cooldown = maxf(damage_cooldown - delta, 0.0)
 	var direction = Input.get_vector(
 		"move_left",
@@ -38,6 +42,15 @@ func _physics_process(delta):
 		"move_up",
         "move_down"
 	)
+	if direction != Vector2.ZERO:
+		if absf(direction.x) >= absf(direction.y):
+			facing_direction = Vector2.RIGHT if direction.x > 0.0 else Vector2.LEFT
+		else:
+			facing_direction = Vector2.DOWN if direction.y > 0.0 else Vector2.UP
+	$Sword.face(facing_direction)
+	if has_sword and attack_cooldown == 0.0 and Input.is_action_just_pressed("attack"):
+		attack_cooldown = 0.4
+		$Sword.attack(facing_direction)
 
 	velocity = direction * speed
 	if knockback_time_remaining > 0.0:
@@ -61,10 +74,15 @@ func _physics_process(delta):
 			$FootstepSound.stream = FOOTSTEP_SOUNDS[index]
 			$FootstepSound.pitch_scale = footstep_rng.randf_range(0.94, 1.06)
 			$FootstepSound.play()
+			$Effects.play_step_dust()
 
 func stop_footsteps() -> void:
 	$FootstepSound.stop()
 	footstep_distance = STEP_DISTANCE
+
+func equip_sword() -> void:
+	has_sword = true
+	$Sword.visible = true
 
 
 func take_damage(enemy_position: Vector2) -> bool:
@@ -77,6 +95,7 @@ func take_damage(enemy_position: Vector2) -> bool:
 		knockback_direction = Vector2.RIGHT
 	knockback_time_remaining = 0.12
 	show_hit_feedback()
+	$Effects.play_damage_burst()
 	$DamageSound.stream = DAMAGE_SOUNDS[audio_rng.randi_range(0, DAMAGE_SOUNDS.size() - 1)]
 	$DamageSound.play()
 	health_changed.emit(health)

@@ -10,6 +10,8 @@
 [ext_resource type="Theme" path="res://ui_theme.tres" id="8_ui"]
 [ext_resource type="Script" path="res://health_display.gd" id="9_health"]
 [ext_resource type="Script" path="res://character_effects.gd" id="10_effects"]
+[ext_resource type="Script" path="res://sword.gd" id="11_sword"]
+[ext_resource type="Script" path="res://sword_pickup.gd" id="12_pickup"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_jpyye"]
 radius = 20.0
@@ -65,6 +67,37 @@ volume_db = -9.0
 
 [node name="FootstepSound" type="AudioStreamPlayer" parent="Player"]
 volume_db = -17.0
+
+[node name="Sword" type="Node2D" parent="Player"]
+visible = false
+script = ExtResource("11_sword")
+
+[node name="SwordPickups" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="Sword1" type="Area2D" parent="SwordPickups"]
+position = Vector2(680, 550)
+script = ExtResource("12_pickup")
+
+[node name="Sword2" type="Area2D" parent="SwordPickups"]
+position = Vector2(1040, 920)
+script = ExtResource("12_pickup")
+
+[node name="Sword3" type="Area2D" parent="SwordPickups"]
+position = Vector2(1520, 720)
+script = ExtResource("12_pickup")
+
+[node name="Sword4" type="Area2D" parent="SwordPickups"]
+position = Vector2(2080, 1300)
+script = ExtResource("12_pickup")
+
+[node name="Sword5" type="Area2D" parent="SwordPickups"]
+position = Vector2(2440, 1000)
+script = ExtResource("12_pickup")
+
+[node name="Sword6" type="Area2D" parent="SwordPickups"]
+position = Vector2(1380, 1600)
+script = ExtResource("12_pickup")
 
 [node name="Enemy" type="CharacterBody2D" parent="." unique_id=501922679 groups=["enemies"]]
 position = Vector2(200, 300)

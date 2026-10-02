@@ -1,5 +1,7 @@
 extends Node2D
 
+const DustVFX = preload("res://dust_vfx.gd")
+
 const SPAWN_SOUNDS = [
 	preload("res://assets/audio/combat/impactSoft_medium_000.ogg"),
 	preload("res://assets/audio/combat/impactSoft_medium_001.ogg"),
@@ -14,12 +16,15 @@ var particles: Array[Dictionary] = []
 var step_time: float = 0.0
 var step_side: float = 1.0
 var rng = RandomNumberGenerator.new()
+var vfx_rng = RandomNumberGenerator.new()
+var step_burst_count: int = 0
 
 @onready var body: CharacterBody2D = get_parent()
 @onready var sprite: AnimatedSprite2D = get_parent().get_node("AnimatedSprite2D")
 
 func _ready() -> void:
 	rng.randomize()
+	vfx_rng.randomize()
 	if emerge_on_spawn:
 		# Only the artwork rises; the body remains active at its spawn position.
 		sprite.scale.y = 0.1
@@ -28,20 +33,25 @@ func _ready() -> void:
 		rise.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		rise.tween_property(sprite, "scale:y", 2.0, 0.4)
 		rise.tween_property(sprite, "position:y", -12.0, 0.4)
-		for index in range(8):
-			add_particle(Vector2(rng.randf_range(-12, 12), 14),
-				Vector2(rng.randf_range(-40, 40), rng.randf_range(-65, -25)),
-				0.45, 4.0, Color("866044"), 150.0)
-		for index in range(4):
-			add_particle(Vector2(rng.randf_range(-10, 10), 14),
-				Vector2(rng.randf_range(-30, 30), -8),
-				0.35, 6.0, Color(0.66, 0.57, 0.39, 0.45), 0.0)
+		DustVFX.play(body.get_parent(), DustVFX.Kind.SPAWN, body.global_position, 0.5, 0.75)
+		if vfx_rng.randi_range(0, 4) == 0:
+			DustVFX.play(body.get_parent(), DustVFX.Kind.STRONG_SPAWN, body.global_position, 0.5, 0.45)
 		step_time = 0.4
 		var audio_rng = RandomNumberGenerator.new()
 		audio_rng.randomize()
 		var sound: AudioStreamPlayer2D = body.get_node("SpawnSound")
 		sound.stream = SPAWN_SOUNDS[audio_rng.randi_range(0, SPAWN_SOUNDS.size() - 1)]
 		sound.play()
+
+func play_step_dust() -> void:
+	step_burst_count += 1
+	if step_burst_count % 2 == 1:
+		var puff = DustVFX.play(body.get_parent(), DustVFX.Kind.STEP, body.global_position, 0.25, 0.4)
+		puff.flip_h = body.get_real_velocity().x > 0.0
+
+func play_damage_burst() -> void:
+	# The hit burst also marks the start of knockback, without extra collision spam.
+	DustVFX.play(body.get_parent(), DustVFX.Kind.HIT, body.global_position, 0.5)
 
 func _process(delta: float) -> void:
 	step_time = maxf(step_time - delta, 0.0)
