@@ -8,7 +8,7 @@ const DEATH_SHEETS = {
 
 @export var speed: float = 120.0
 
-var health: int = 3
+var health: int = 5
 var dead: bool = false
 var recoil_direction: Vector2 = Vector2.ZERO
 var recoil_time_remaining: float = 0.0

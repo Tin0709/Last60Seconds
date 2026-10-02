@@ -17,10 +17,11 @@ const ENEMY_VISUALS = [
 ]
 
 @export var world_bounds: Rect2 = Rect2(0, 0, 3200, 2240)
+const SPAWN_DENSITY: float = 5.0
 
 var time_remaining: float = 60.0
 var game_ended: bool = false
-var spawn_time_remaining: float = 5.0
+var spawn_time_remaining: float = 5.0 / SPAWN_DENSITY
 var audio_rng = RandomNumberGenerator.new()
 var enemy_template: CharacterBody2D
 
@@ -61,9 +62,11 @@ func _process(delta: float) -> void:
 	if spawn_time_remaining <= 0.0:
 		spawn_enemy()
 		var progress: float = clampf(1.0 - time_remaining / 60.0, 0.0, 1.0)
-		spawn_time_remaining = lerpf(5.0, 2.0, progress)
+		spawn_time_remaining += lerpf(5.0, 2.0, progress) / SPAWN_DENSITY
 
 func spawn_enemy() -> void:
+	if game_ended:
+		return
 	var radius: float = enemy_template.get_node("CollisionShape2D").shape.radius
 	var spawn_bounds = world_bounds.grow(-radius)
 	for attempt in range(8):
@@ -95,6 +98,7 @@ func end_game(message: String) -> void:
 	$HUD/RestartButton.show()
 	set_process(false)
 	$Player.set_physics_process(false)
+	$Player.clear_weapon_prompt()
 	$Player.velocity = Vector2.ZERO
 	$Player.stop_footsteps()
 	$Player/Sword.cancel_attack()

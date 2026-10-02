@@ -21,6 +21,8 @@ func set_paused(paused: bool) -> void:
 		return
 	get_tree().paused = paused
 	overlay.visible = paused
+	if paused:
+		game.get_node("Player").clear_weapon_prompt()
 
 func _resume() -> void:
 	game.play_ui_click()
