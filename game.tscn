@@ -1,7 +1,9 @@
 [gd_scene format=3 uid="uid://by3uecmo5nkt"]
 
 [ext_resource type="Script" uid="uid://b3wxohq16ktsi" path="res://player.gd" id="1_80nbo"]
-[ext_resource type="Texture2D" uid="uid://eq6dcm817lai" path="res://icon.svg" id="2_e2o6t"]
+[ext_resource type="SpriteFrames" path="res://player_frames.tres" id="2_player_frames"]
+[ext_resource type="SpriteFrames" path="res://enemy_frames.tres" id="6_enemy_frames"]
+[ext_resource type="Script" path="res://character_animation.gd" id="7_animation"]
 [ext_resource type="Script" uid="uid://da5k5o14fmhip" path="res://enemy.gd" id="3_feb5d"]
 [ext_resource type="Script" path="res://game.gd" id="4_countdown"]
 [ext_resource type="Script" path="res://world.gd" id="5_world"]
@@ -36,9 +38,13 @@ y_sort_enabled = true
 position = Vector2(500, 300)
 script = ExtResource("1_80nbo")
 
-[node name="Sprite2D" type="Sprite2D" parent="Player" unique_id=457808464]
-scale = Vector2(0.3, 0.3)
-texture = ExtResource("2_e2o6t")
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player" unique_id=457808464]
+texture_filter = 1
+position = Vector2(0, -12)
+scale = Vector2(2, 2)
+sprite_frames = ExtResource("2_player_frames")
+animation = &"idle_down"
+script = ExtResource("7_animation")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=2014221652]
 shape = SubResource("CircleShape2D_jpyye")
@@ -50,10 +56,14 @@ position_smoothing_enabled = false
 position = Vector2(200, 300)
 script = ExtResource("3_feb5d")
 
-[node name="Sprite2D" type="Sprite2D" parent="Enemy" unique_id=2033608354]
-modulate = Color(0.9906227, 0, 0.21160582, 1)
-scale = Vector2(0.25, 0.25)
-texture = ExtResource("2_e2o6t")
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Enemy" unique_id=2033608354]
+texture_filter = 1
+position = Vector2(0, -12)
+scale = Vector2(2, 2)
+sprite_frames = ExtResource("6_enemy_frames")
+animation = &"idle_side"
+script = ExtResource("7_animation")
+directional = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Enemy" unique_id=1254806273]
 shape = SubResource("CircleShape2D_orua6")
