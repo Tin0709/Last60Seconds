@@ -8,7 +8,7 @@ const DEATH_SHEETS = {
 
 @export var speed: float = 120.0
 
-var health: int = 5
+var health: float = 5.0
 var dead: bool = false
 var recoil_direction: Vector2 = Vector2.ZERO
 var recoil_time_remaining: float = 0.0
@@ -48,18 +48,23 @@ func _physics_process(delta):
 		velocity = recoil_direction * 220.0
 		move_and_collide(recoil_direction * 12.0)
 
-func take_sword_hit() -> bool:
-	return take_hit()
+func take_sword_hit(damage: float = -1.0) -> bool:
+	return take_hit(damage)
 
-func take_hit() -> bool:
-	if dead:
+func take_hit(damage: float = -1.0) -> bool:
+	var game = get_parent()
+	if dead or health <= 0.0 or not game.run_active or game.game_ended or not can_process():
 		return false
-	health -= 1
+	var actual_damage = minf(health, game.weapon_damage if damage < 0.0 else damage)
+	if actual_damage <= 0.0:
+		return false
+	health = maxf(health - actual_damage, 0.0)
+	game.record_damage(actual_damage)
 	var sprite: AnimatedSprite2D = $AnimatedSprite2D
 	sprite.modulate = Color(1.0, 0.55, 0.4)
 	create_tween().tween_property(sprite, "modulate", Color.WHITE, 0.16)
 	var feedback = Label.new()
-	feedback.text = "-1 ♥"
+	feedback.text = "-%s ♥" % String.num(actual_damage, 2).trim_suffix(".0")
 	feedback.theme = preload("res://ui_theme.tres")
 	feedback.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
 	feedback.add_theme_font_size_override("font_size", 18)

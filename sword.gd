@@ -98,7 +98,7 @@ func face(direction: Vector2) -> void:
 	blade.z_index = -1 if direction == Vector2.UP else 0
 
 func attack(direction: Vector2) -> void:
-	if not visible or not get_parent().is_physics_processing():
+	if not visible or not get_parent().is_physics_processing() or not can_process():
 		return
 	face(direction)
 	attack_direction = direction
@@ -122,17 +122,18 @@ func _physics_process(_delta: float) -> void:
 
 func _check_hits() -> void:
 	# Frame 3 contains the visible Slice arc; windup and recovery cannot hit.
-	if not attacking or not visible or slash.frame != 3 or not get_parent().is_physics_processing():
+	if not attacking or not visible or slash.frame != 3 or not get_parent().is_physics_processing() or not can_process():
 		return
 	var hit = false
 	var killed = false
+	var damage: float = get_parent().get_parent().weapon_damage
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		var id = enemy.get_instance_id()
 		if hit_enemies.has(id):
 			continue
 		var offset: Vector2 = enemy.global_position - global_position
 		if offset.length_squared() <= 72.0 * 72.0 and (offset == Vector2.ZERO or offset.normalized().dot(attack_direction) >= 0.5):
-			if enemy.take_sword_hit():
+			if enemy.take_sword_hit(damage):
 				hit_enemies[id] = true
 				hit = true
 				killed = killed or enemy.dead

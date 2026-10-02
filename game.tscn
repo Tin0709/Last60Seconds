@@ -248,6 +248,18 @@ mouse_filter = 2
 theme = ExtResource("8_ui")
 script = ExtResource("9_health")
 
+[node name="ProgressionLabel" type="Label" parent="HUD"]
+texture_filter = 1
+offset_left = 20.0
+offset_top = 72.0
+offset_right = 496.0
+offset_bottom = 110.0
+mouse_filter = 2
+theme = ExtResource("8_ui")
+theme_override_font_sizes/font_size = 18
+text = "Damage: 0   Power: 1"
+vertical_alignment = 1
+
 [node name="RestartButton" type="Button" parent="HUD"]
 visible = false
 texture_filter = 1
@@ -264,6 +276,23 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("8_ui")
 text = "RESTART"
+
+[node name="ModeSelectButton" type="Button" parent="HUD"]
+visible = false
+texture_filter = 1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -142.0
+offset_top = 114.0
+offset_right = 142.0
+offset_bottom = 166.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme = ExtResource("8_ui")
+text = "MODE SELECT"
 
 [node name="WeaponPrompt" type="Label" parent="HUD"]
 visible = false
@@ -319,7 +348,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Panel" type="PanelContainer" parent="PauseMenu/Overlay/Center"]
-custom_minimum_size = Vector2(300, 220)
+custom_minimum_size = Vector2(300, 280)
 layout_mode = 2
 
 [node name="Buttons" type="VBoxContainer" parent="PauseMenu/Overlay/Center/Panel"]
@@ -341,5 +370,66 @@ text = "RESUME"
 layout_mode = 2
 focus_mode = 0
 text = "RESTART"
+
+[node name="ModeSelect" type="Button" parent="PauseMenu/Overlay/Center/Panel/Buttons"]
+layout_mode = 2
+focus_mode = 0
+text = "MODE SELECT"
+
+[node name="ModeSelection" type="CanvasLayer" parent="."]
+process_mode = 3
+layer = 11
+
+[node name="Overlay" type="Control" parent="ModeSelection"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("8_ui")
+texture_filter = 1
+
+[node name="Backdrop" type="ColorRect" parent="ModeSelection/Overlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.03, 0.05, 0.03, 0.82)
+mouse_filter = 2
+
+[node name="Center" type="CenterContainer" parent="ModeSelection/Overlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="ModeSelection/Overlay/Center"]
+custom_minimum_size = Vector2(520, 220)
+layout_mode = 2
+
+[node name="Buttons" type="VBoxContainer" parent="ModeSelection/Overlay/Center/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Title" type="Label" parent="ModeSelection/Overlay/Center/Panel/Buttons"]
+layout_mode = 2
+text = "CHOOSE A MODE"
+horizontal_alignment = 1
+
+[node name="Countdown" type="Button" parent="ModeSelection/Overlay/Center/Panel/Buttons"]
+layout_mode = 2
+focus_mode = 0
+text = "THE LAST 60 SECONDS"
+
+[node name="Endless" type="Button" parent="ModeSelection/Overlay/Center/Panel/Buttons"]
+layout_mode = 2
+focus_mode = 0
+text = "ENDLESS"
 
 [connection signal="pressed" from="HUD/RestartButton" to="." method="_on_restart_button_pressed"]

@@ -12,10 +12,11 @@ static func detonate(parent: Node2D, point: Vector2, gun: Node2D) -> void:
 	plume.add_to_group("explosions")
 	var damaged = false
 	var killed = false
+	var damage: float = parent.weapon_damage
 	# Apply the blast once, rather than using a persistent overlapping damage area.
 	for enemy in parent.get_tree().get_nodes_in_group("enemies"):
 		if is_instance_valid(enemy) and not enemy.is_queued_for_deletion() and not enemy.dead:
-			if point.distance_squared_to(enemy.global_position) <= BLAST_RADIUS * BLAST_RADIUS and enemy.take_hit():
+			if point.distance_squared_to(enemy.global_position) <= BLAST_RADIUS * BLAST_RADIUS and enemy.take_hit(damage):
 				damaged = true
 				killed = killed or enemy.dead
 	if damaged and is_instance_valid(gun):

@@ -18,8 +18,16 @@ const ENEMY_VISUALS = [
 
 @export var world_bounds: Rect2 = Rect2(0, 0, 3200, 2240)
 const SPAWN_DENSITY: float = 5.0
+const ENDLESS_ENEMY_CAP: int = 120
+
+# Persist only the mode across scene reloads; all run state belongs to the scene.
+static var selected_mode: StringName = &""
 
 var time_remaining: float = 60.0
+var elapsed_time: float = 0.0
+var run_active: bool = false
+var total_damage_dealt: float = 0.0
+var weapon_damage: float = 1.0
 var game_ended: bool = false
 var spawn_time_remaining: float = 5.0 / SPAWN_DENSITY
 var audio_rng = RandomNumberGenerator.new()
@@ -34,6 +42,14 @@ func _ready() -> void:
 	enemy_template = $Enemy.duplicate()
 	audio_rng.randomize()
 	$HUD/RestartButton.mouse_entered.connect(_on_restart_button_hovered)
+	$HUD/ModeSelectButton.pressed.connect(return_to_mode_select)
+	$HUD/ModeSelectButton.mouse_entered.connect(_on_restart_button_hovered)
+	var buttons = $ModeSelection/Overlay/Center/Panel/Buttons
+	buttons.get_node("Countdown").pressed.connect(start_run.bind(&"countdown"))
+	buttons.get_node("Endless").pressed.connect(start_run.bind(&"endless"))
+	for button in [buttons.get_node("Countdown"), buttons.get_node("Endless")]:
+		button.mouse_entered.connect(_on_restart_button_hovered)
+	$ModeSelection/Overlay/Center/Panel.add_theme_stylebox_override("panel", preload("res://ui_theme.tres").get_stylebox("normal", "Label"))
 	$Player.world_bounds = world_bounds
 	var camera: Camera2D = $Player/Camera2D
 	camera.limit_left = int(world_bounds.position.x)
@@ -42,30 +58,80 @@ func _ready() -> void:
 	camera.limit_bottom = int(world_bounds.end.y)
 	$Player.health_changed.connect(_on_player_health_changed)
 	_on_player_health_changed($Player.health)
+	_update_progression_hud()
+	if selected_mode == &"":
+		$HUD.hide()
+		get_tree().paused = true
+	else:
+		start_run(selected_mode, false)
+
+func start_run(mode: StringName, play_click: bool = true) -> void:
+	if run_active:
+		return
+	selected_mode = mode
+	run_active = true
+	time_remaining = 60.0
+	elapsed_time = 0.0
+	total_damage_dealt = 0.0
+	weapon_damage = 1.0
+	spawn_time_remaining = 5.0 / SPAWN_DENSITY
+	$ModeSelection/Overlay.hide()
+	$HUD.show()
+	get_tree().paused = false
+	_update_time_hud()
+	_update_progression_hud()
+	if play_click:
+		play_ui_click()
+
+func record_damage(amount: float) -> void:
+	if not run_active or game_ended or amount <= 0.0:
+		return
+	total_damage_dealt += amount
+	weapon_damage = 1.0 + floorf(total_damage_dealt / 10.0) * 0.5
+	_update_progression_hud()
+
+func _update_progression_hud() -> void:
+	$HUD/ProgressionLabel.text = "Damage: %s   Power: %s" % [String.num(total_damage_dealt, 2).trim_suffix(".0"), String.num(weapon_damage, 2).trim_suffix(".0")]
+
+func _update_time_hud() -> void:
+	if selected_mode == &"endless":
+		var seconds = int(elapsed_time)
+		time_label.text = "Time: %02d:%02d" % [seconds / 60, seconds % 60]
+	else:
+		time_label.text = "Time: %d" % ceili(time_remaining)
+
+func spawn_interval() -> float:
+	if selected_mode == &"endless" and elapsed_time > 60.0:
+		return lerpf(0.4, 0.2, clampf((elapsed_time - 60.0) / 240.0, 0.0, 1.0))
+	var progress = clampf(elapsed_time / 60.0, 0.0, 1.0)
+	return lerpf(5.0, 2.0, progress) / SPAWN_DENSITY
 
 func _on_player_health_changed(health: int) -> void:
 	health_display.health = health
-	if health == 0:
+	if health <= 0 and run_active:
 		end_game("GAME OVER")
 
 func _process(delta: float) -> void:
-	if game_ended:
+	if game_ended or not run_active:
 		return
-	time_remaining = maxf(time_remaining - delta, 0.0)
-	time_label.text = "Time: %d" % ceili(time_remaining)
+	elapsed_time += delta
+	if selected_mode == &"countdown":
+		time_remaining = maxf(time_remaining - delta, 0.0)
+	_update_time_hud()
 
-	if time_remaining == 0.0:
+	if selected_mode == &"countdown" and time_remaining == 0.0:
 		end_game("SURVIVED")
 		return
 
 	spawn_time_remaining -= delta
 	if spawn_time_remaining <= 0.0:
 		spawn_enemy()
-		var progress: float = clampf(1.0 - time_remaining / 60.0, 0.0, 1.0)
-		spawn_time_remaining += lerpf(5.0, 2.0, progress) / SPAWN_DENSITY
+		spawn_time_remaining += spawn_interval()
 
 func spawn_enemy() -> void:
-	if game_ended:
+	if game_ended or not run_active:
+		return
+	if selected_mode == &"endless" and get_tree().get_nodes_in_group("enemies").size() >= ENDLESS_ENEMY_CAP:
 		return
 	var radius: float = enemy_template.get_node("CollisionShape2D").shape.radius
 	var spawn_bounds = world_bounds.grow(-radius)
@@ -96,6 +162,7 @@ func end_game(message: String) -> void:
 	survived_label.text = message
 	survived_label.show()
 	$HUD/RestartButton.show()
+	$HUD/ModeSelectButton.show()
 	set_process(false)
 	$Player.set_physics_process(false)
 	$Player.clear_weapon_prompt()
@@ -125,6 +192,13 @@ func play_ui_click() -> void:
 	$UISound.play()
 
 func _on_restart_button_pressed() -> void:
+	_reload_run(selected_mode)
+
+func return_to_mode_select() -> void:
+	_reload_run(&"")
+
+func _reload_run(mode: StringName) -> void:
+	selected_mode = mode
 	$PauseMenu.set_paused(false)
 	# Let the short click finish across the immediate scene reload.
 	var sound: AudioStreamPlayer = $UISound
