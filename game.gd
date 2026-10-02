@@ -1,5 +1,15 @@
 extends Node2D
 
+const HOVER_SOUNDS = [
+	preload("res://assets/audio/ui/rollover1.ogg"),
+	preload("res://assets/audio/ui/rollover2.ogg"),
+]
+const CLICK_SOUNDS = [
+	preload("res://assets/audio/ui/click1.ogg"),
+	preload("res://assets/audio/ui/click2.ogg"),
+	preload("res://assets/audio/ui/click3.ogg"),
+]
+
 const ENEMY_VISUALS = [
 	preload("res://enemy_frames.tres"),
 	preload("res://orc_warrior_frames.tres"),
@@ -11,12 +21,15 @@ const ENEMY_VISUALS = [
 var time_remaining: float = 60.0
 var game_ended: bool = false
 var spawn_time_remaining: float = 5.0
+var audio_rng = RandomNumberGenerator.new()
 
 @onready var time_label: Label = $HUD/TimeLabel
 @onready var survived_label: Label = $HUD/SurvivedLabel
 @onready var health_display: Control = $HUD/HealthDisplay
 
 func _ready() -> void:
+	audio_rng.randomize()
+	$HUD/RestartButton.mouse_entered.connect(_on_restart_button_hovered)
 	$Player.world_bounds = world_bounds
 	var camera: Camera2D = $Player/Camera2D
 	camera.limit_left = int(world_bounds.position.x)
@@ -83,5 +96,15 @@ func end_game(message: String) -> void:
 		enemy.set_physics_process(false)
 		enemy.velocity = Vector2.ZERO
 
+func _on_restart_button_hovered() -> void:
+	$UISound.stream = HOVER_SOUNDS[audio_rng.randi_range(0, HOVER_SOUNDS.size() - 1)]
+	$UISound.play()
+
 func _on_restart_button_pressed() -> void:
+	# Let the short click finish across the immediate scene reload.
+	var sound: AudioStreamPlayer = $UISound
+	sound.stream = CLICK_SOUNDS[audio_rng.randi_range(0, CLICK_SOUNDS.size() - 1)]
+	sound.reparent(get_tree().root)
+	sound.finished.connect(sound.queue_free)
+	sound.play()
 	get_tree().reload_current_scene()

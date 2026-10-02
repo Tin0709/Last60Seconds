@@ -1,5 +1,13 @@
 extends Node2D
 
+const SPAWN_SOUNDS = [
+	preload("res://assets/audio/combat/impactSoft_medium_000.ogg"),
+	preload("res://assets/audio/combat/impactSoft_medium_001.ogg"),
+	preload("res://assets/audio/combat/impactSoft_medium_002.ogg"),
+	preload("res://assets/audio/combat/impactSoft_medium_003.ogg"),
+	preload("res://assets/audio/combat/impactSoft_medium_004.ogg"),
+]
+
 @export var emerge_on_spawn: bool = false
 
 var particles: Array[Dictionary] = []
@@ -29,6 +37,11 @@ func _ready() -> void:
 				Vector2(rng.randf_range(-30, 30), -8),
 				0.35, 6.0, Color(0.66, 0.57, 0.39, 0.45), 0.0)
 		step_time = 0.4
+		var audio_rng = RandomNumberGenerator.new()
+		audio_rng.randomize()
+		var sound: AudioStreamPlayer2D = body.get_node("SpawnSound")
+		sound.stream = SPAWN_SOUNDS[audio_rng.randi_range(0, SPAWN_SOUNDS.size() - 1)]
+		sound.play()
 
 func _process(delta: float) -> void:
 	step_time = maxf(step_time - delta, 0.0)

@@ -2,6 +2,14 @@ extends CharacterBody2D
 
 signal health_changed(health: int)
 
+const DAMAGE_SOUNDS = [
+	preload("res://assets/audio/combat/impactPunch_heavy_000.ogg"),
+	preload("res://assets/audio/combat/impactPunch_heavy_001.ogg"),
+	preload("res://assets/audio/combat/impactPunch_heavy_002.ogg"),
+	preload("res://assets/audio/combat/impactPunch_heavy_003.ogg"),
+	preload("res://assets/audio/combat/impactPunch_heavy_004.ogg"),
+]
+
 @export var speed: float = 300.0
 @export var player_radius: float = 20.0
 
@@ -10,6 +18,10 @@ var world_bounds: Rect2
 var damage_cooldown: float = 0.0
 var knockback_direction: Vector2 = Vector2.ZERO
 var knockback_time_remaining: float = 0.0
+var audio_rng = RandomNumberGenerator.new()
+
+func _ready() -> void:
+	audio_rng.randomize()
 
 func _physics_process(delta):
 	damage_cooldown = maxf(damage_cooldown - delta, 0.0)
@@ -39,6 +51,8 @@ func take_damage(enemy_position: Vector2) -> bool:
 		knockback_direction = Vector2.RIGHT
 	knockback_time_remaining = 0.12
 	show_hit_feedback()
+	$DamageSound.stream = DAMAGE_SOUNDS[audio_rng.randi_range(0, DAMAGE_SOUNDS.size() - 1)]
+	$DamageSound.play()
 	health_changed.emit(health)
 	return true
 

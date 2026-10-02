@@ -60,6 +60,9 @@ script = ExtResource("10_effects")
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position_smoothing_enabled = false
 
+[node name="DamageSound" type="AudioStreamPlayer" parent="Player"]
+volume_db = -9.0
+
 [node name="Enemy" type="CharacterBody2D" parent="." unique_id=501922679 groups=["enemies"]]
 position = Vector2(200, 300)
 script = ExtResource("3_feb5d")
@@ -80,6 +83,13 @@ shape = SubResource("CircleShape2D_orua6")
 z_index = -1
 script = ExtResource("10_effects")
 emerge_on_spawn = true
+
+[node name="SpawnSound" type="AudioStreamPlayer2D" parent="Enemy"]
+volume_db = -12.0
+max_distance = 900.0
+
+[node name="UISound" type="AudioStreamPlayer" parent="."]
+volume_db = -18.0
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
