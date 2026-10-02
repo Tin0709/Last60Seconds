@@ -1,7 +1,7 @@
 [gd_resource type="SpriteFrames" format=3]
 
-[ext_resource type="Texture2D" path="res://assets/Pixel Crawler/Entities/Npc's/Rogue/Idle/Idle-Sheet.png" id="1"]
-[ext_resource type="Texture2D" path="res://assets/Pixel Crawler/Entities/Npc's/Rogue/Run/Run-Sheet.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/Pixel Crawler/Entities/Mobs/Skeleton Crew/Skeleton - Warrior/Idle/Idle-Sheet.png" id="1"]
+[ext_resource type="Texture2D" path="res://assets/Pixel Crawler/Entities/Mobs/Skeleton Crew/Skeleton - Warrior/Run/Run-Sheet.png" id="2"]
 
 [sub_resource type="AtlasTexture" id="idle_side_0"]
 atlas = ExtResource("1")

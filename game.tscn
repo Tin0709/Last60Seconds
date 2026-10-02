@@ -43,8 +43,9 @@ texture_filter = 1
 position = Vector2(0, -12)
 scale = Vector2(2, 2)
 sprite_frames = ExtResource("2_player_frames")
-animation = &"idle_down"
+animation = &"idle_side"
 script = ExtResource("7_animation")
+directional = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=2014221652]
 shape = SubResource("CircleShape2D_jpyye")

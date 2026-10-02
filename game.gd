@@ -1,5 +1,11 @@
 extends Node2D
 
+const ENEMY_VISUALS = [
+	preload("res://enemy_frames.tres"),
+	preload("res://orc_warrior_frames.tres"),
+	preload("res://skeleton_warrior_frames.tres"),
+]
+
 @export var world_bounds: Rect2 = Rect2(0, 0, 2400, 1600)
 
 var time_remaining: float = 60.0
@@ -58,6 +64,7 @@ func spawn_enemy() -> void:
 		if spawn_position.distance_to($Player.global_position) < 100.0:
 			continue
 		var enemy = $Enemy.duplicate()
+		enemy.get_node("AnimatedSprite2D").sprite_frames = ENEMY_VISUALS.pick_random()
 		add_child(enemy)
 		enemy.global_position = spawn_position
 		return
