@@ -92,6 +92,7 @@ func end_game(message: String) -> void:
 	set_process(false)
 	$Player.set_physics_process(false)
 	$Player.velocity = Vector2.ZERO
+	$Player.stop_footsteps()
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		enemy.set_physics_process(false)
 		enemy.velocity = Vector2.ZERO

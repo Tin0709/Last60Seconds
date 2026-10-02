@@ -2,6 +2,9 @@ extends CharacterBody2D
 
 signal health_changed(health: int)
 
+const FOOTSTEP_SOUNDS = [preload("res://assets/audio/footsteps/footstep_grass_004.ogg")]
+const STEP_DISTANCE: float = 72.0
+
 const DAMAGE_SOUNDS = [
 	preload("res://assets/audio/combat/impactPunch_heavy_000.ogg"),
 	preload("res://assets/audio/combat/impactPunch_heavy_001.ogg"),
@@ -19,9 +22,13 @@ var damage_cooldown: float = 0.0
 var knockback_direction: Vector2 = Vector2.ZERO
 var knockback_time_remaining: float = 0.0
 var audio_rng = RandomNumberGenerator.new()
+var footstep_rng = RandomNumberGenerator.new()
+var footstep_distance: float = STEP_DISTANCE
+var last_footstep: int = -1
 
 func _ready() -> void:
 	audio_rng.randomize()
+	footstep_rng.randomize()
 
 func _physics_process(delta):
 	damage_cooldown = maxf(damage_cooldown - delta, 0.0)
@@ -36,9 +43,28 @@ func _physics_process(delta):
 	if knockback_time_remaining > 0.0:
 		velocity = knockback_direction * 400.0
 		knockback_time_remaining = maxf(knockback_time_remaining - delta, 0.0)
+	var previous_position = global_position
 	move_and_slide()
 
 	keep_inside_world()
+	var distance = global_position.distance_to(previous_position)
+	if direction == Vector2.ZERO or distance < 0.1 or knockback_time_remaining > 0.0:
+		stop_footsteps()
+	else:
+		footstep_distance += distance
+		if footstep_distance >= STEP_DISTANCE:
+			footstep_distance = fmod(footstep_distance, STEP_DISTANCE)
+			var index = footstep_rng.randi_range(0, FOOTSTEP_SOUNDS.size() - 1)
+			if FOOTSTEP_SOUNDS.size() > 1 and index == last_footstep:
+				index = (index + footstep_rng.randi_range(1, FOOTSTEP_SOUNDS.size() - 1)) % FOOTSTEP_SOUNDS.size()
+			last_footstep = index
+			$FootstepSound.stream = FOOTSTEP_SOUNDS[index]
+			$FootstepSound.pitch_scale = footstep_rng.randf_range(0.94, 1.06)
+			$FootstepSound.play()
+
+func stop_footsteps() -> void:
+	$FootstepSound.stop()
+	footstep_distance = STEP_DISTANCE
 
 
 func take_damage(enemy_position: Vector2) -> bool:

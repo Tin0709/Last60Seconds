@@ -63,6 +63,9 @@ position_smoothing_enabled = false
 [node name="DamageSound" type="AudioStreamPlayer" parent="Player"]
 volume_db = -9.0
 
+[node name="FootstepSound" type="AudioStreamPlayer" parent="Player"]
+volume_db = -24.0
+
 [node name="Enemy" type="CharacterBody2D" parent="." unique_id=501922679 groups=["enemies"]]
 position = Vector2(200, 300)
 script = ExtResource("3_feb5d")
