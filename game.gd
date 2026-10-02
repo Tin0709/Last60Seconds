@@ -30,7 +30,8 @@ func _process(delta: float) -> void:
 	spawn_time_remaining -= delta
 	if spawn_time_remaining <= 0.0:
 		spawn_enemy()
-		spawn_time_remaining = 5.0
+		var progress: float = clampf(1.0 - time_remaining / 60.0, 0.0, 1.0)
+		spawn_time_remaining = lerpf(5.0, 2.0, progress)
 
 func spawn_enemy() -> void:
 	var screen_size = get_viewport_rect().size
