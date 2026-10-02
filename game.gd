@@ -14,7 +14,7 @@ var spawn_time_remaining: float = 5.0
 
 @onready var time_label: Label = $HUD/TimeLabel
 @onready var survived_label: Label = $HUD/SurvivedLabel
-@onready var health_label: Label = $HUD/HealthLabel
+@onready var health_display: Control = $HUD/HealthDisplay
 
 func _ready() -> void:
 	$Player.world_bounds = world_bounds
@@ -27,7 +27,7 @@ func _ready() -> void:
 	_on_player_health_changed($Player.health)
 
 func _on_player_health_changed(health: int) -> void:
-	health_label.text = "Health: %d" % health
+	health_display.health = health
 	if health == 0:
 		end_game("GAME OVER")
 

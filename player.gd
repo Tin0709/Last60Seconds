@@ -5,7 +5,7 @@ signal health_changed(health: int)
 @export var speed: float = 300.0
 @export var player_radius: float = 20.0
 
-var health: int = 3
+var health: int = 5
 var world_bounds: Rect2
 var damage_cooldown: float = 0.0
 var knockback_direction: Vector2 = Vector2.ZERO
@@ -38,7 +38,32 @@ func take_damage(enemy_position: Vector2) -> void:
 	if knockback_direction == Vector2.ZERO:
 		knockback_direction = Vector2.RIGHT
 	knockback_time_remaining = 0.12
+	show_hit_feedback()
 	health_changed.emit(health)
+
+
+func show_hit_feedback() -> void:
+	var sprite: AnimatedSprite2D = $AnimatedSprite2D
+	sprite.modulate = Color(1.0, 0.35, 0.35)
+	create_tween().tween_property(sprite, "modulate", Color.WHITE, 0.25)
+
+	var feedback = Label.new()
+	feedback.text = "-1 heart"
+	feedback.theme = preload("res://ui_theme.tres")
+	feedback.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
+	feedback.add_theme_font_size_override("font_size", 18)
+	feedback.add_theme_color_override("font_color", Color("ffb6a3"))
+	feedback.add_theme_color_override("font_outline_color", Color("171e16"))
+	feedback.add_theme_constant_override("outline_size", 4)
+	feedback.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	feedback.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	feedback.z_index = 10
+	get_parent().add_child(feedback)
+	feedback.global_position = global_position + Vector2(-feedback.get_minimum_size().x / 2.0, -64)
+	var tween = feedback.create_tween().set_parallel(true)
+	tween.tween_property(feedback, "position:y", feedback.position.y - 30.0, 0.65)
+	tween.tween_property(feedback, "modulate:a", 0.0, 0.35).set_delay(0.3)
+	tween.chain().tween_callback(feedback.queue_free)
 
 
 func keep_inside_world():

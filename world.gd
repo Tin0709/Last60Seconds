@@ -32,7 +32,7 @@ func _ready() -> void:
 	for index in range(16):
 		var point = Vector2(rng.randf_range(120, 2280), rng.randf_range(180, 1480))
 		if can_place_solid(point, bounds):
-			add_prop($Obstacles, ROCKS, Rect2(96, 16, 32, 32), point, 18.0)
+			add_prop($Obstacles, ROCKS, Rect2(96, 16, 32, 48), point, 18.0)
 			solid_positions.append(point)
 
 	for index in range(120):
@@ -47,7 +47,7 @@ func _ready() -> void:
 			0:
 				add_prop($Decorations, ROCKS, Rect2(64, 32, 16, 16), point)
 			1:
-				add_prop($Decorations, VEGETATION, Rect2(0, 32, 32, 32), point)
+				add_prop($Decorations, VEGETATION, Rect2(0, 32, 48, 32), point)
 			2:
 				add_prop($Decorations, VEGETATION, Rect2(80, 176, 16, 16), point)
 			3:
